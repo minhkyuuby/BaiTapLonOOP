@@ -1,60 +1,109 @@
 package com.dbdc.game;
 
+import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g3d.*;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
+import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
+import com.badlogic.gdx.math.Vector3;
+import net.mgsx.gltf.loaders.gltf.GLTFLoader;
+import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
+import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
+import net.mgsx.gltf.scene3d.lights.DirectionalLightEx;
+import net.mgsx.gltf.scene3d.scene.Scene;
+import net.mgsx.gltf.scene3d.scene.SceneAsset;
+import net.mgsx.gltf.scene3d.scene.SceneManager;
+import net.mgsx.gltf.scene3d.scene.SceneSkybox;
+import net.mgsx.gltf.scene3d.utils.IBLBuilder;
 
-public class Basic3DTest implements ApplicationListener {
-    public Environment environment;
-    public PerspectiveCamera cam;
-    public CameraInputController camController;
-    public ModelBatch modelBatch;
-    public Model model;
-    public ModelInstance instance;
+public class Basic3DTest extends ApplicationAdapter implements AnimationController.AnimationListener {
+    private SceneManager sceneManager;
+    private SceneAsset sceneAsset;
+    private Scene scene;
+    private PerspectiveCamera camera;
+    private Cubemap diffuseCubemap;
+    private Cubemap environmentCubemap;
+    private Cubemap specularCubemap;
+    private Texture brdfLUT;
+    private float time;
+    private SceneSkybox skybox;
+    private DirectionalLightEx light;
+    private FirstPersonCameraController cameraController;
+
     @Override
     public void create() {
-        environment = new Environment();
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
-        environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
-        modelBatch = new ModelBatch();
-        cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(10f, 10f, 10f);
-        cam.lookAt(0,0,0);
-        cam.near = 1f;
-        cam.far = 300f;
-        cam.update();
-        ModelBuilder modelBuilder = new ModelBuilder();
-        model = modelBuilder.createBox(5f, 5f, 5f,
-                new Material(ColorAttribute.createDiffuse(Color.GREEN)),
-                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
-        instance = new ModelInstance(model);
 
-        camController = new CameraInputController(cam);
-        Gdx.input.setInputProcessor(camController);
+        // create scene
+        sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/character/skeleton-archer.gltf"));
+        scene = new Scene(sceneAsset.scene);
+        sceneManager = new SceneManager();
+        sceneManager.addScene(scene);
+
+        // setup camera (The BoomBox model is very small so you may need to adapt camera settings for your scene)
+        camera = new PerspectiveCamera(65f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        float d = .5f;
+        camera.near = d / 10f;
+        camera.far = 200;
+        sceneManager.setCamera(camera);
+        camera.position.set(0,0.5f, 4f);
+
+        cameraController = new FirstPersonCameraController(camera);
+        Gdx.input.setInputProcessor(cameraController);
+
+        // setup light
+        light = new DirectionalLightEx();
+        light.direction.set(1, -3, 1).nor();
+        light.color.set(Color.WHITE);
+        sceneManager.environment.add(light);
+
+        // setup quick IBL (image based lighting)
+        IBLBuilder iblBuilder = IBLBuilder.createOutdoor(light);
+        environmentCubemap = iblBuilder.buildEnvMap(1024);
+        diffuseCubemap = iblBuilder.buildIrradianceMap(256);
+        specularCubemap = iblBuilder.buildRadianceMap(10);
+        iblBuilder.dispose();
+
+        // This texture is provided by the library, no need to have it in your assets.
+        brdfLUT = new Texture(Gdx.files.classpath("net/mgsx/gltf/shaders/brdfLUT.png"));
+
+        sceneManager.setAmbientLight(1f);
+        sceneManager.environment.set(new PBRTextureAttribute(PBRTextureAttribute.BRDFLUTTexture, brdfLUT));
+        sceneManager.environment.set(PBRCubemapAttribute.createSpecularEnv(specularCubemap));
+        sceneManager.environment.set(PBRCubemapAttribute.createDiffuseEnv(diffuseCubemap));
+
+        // setup skybox
+        skybox = new SceneSkybox(environmentCubemap);
+        sceneManager.setSkyBox(skybox);
+
+        scene.animationController.setAnimation("Idle", -1);
     }
 
     @Override
     public void resize(int width, int height) {
-
+        sceneManager.updateViewport(width, height);
     }
 
     @Override
     public void render() {
-        camController.update();
-        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+        float deltaTime = Gdx.graphics.getDeltaTime();
+        time += deltaTime;
 
-        modelBatch.begin(cam);
-        modelBatch.render(instance, environment);
-        modelBatch.end();
+        cameraController.update();
+//        scene.modelInstance.transform.rotate(Vector3.Y, 10f * deltaTime);
+
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            scene.animationController.action("Jump", 1, 1f, this, 0.25f);
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            scene.animationController.action("Attack(1h)", 1, 1f, this, 0.25f);
+        }
+        // render
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+        sceneManager.update(deltaTime);
+        sceneManager.render();
     }
 
     @Override
@@ -69,7 +118,22 @@ public class Basic3DTest implements ApplicationListener {
 
     @Override
     public void dispose() {
-        modelBatch.dispose();
-        model.dispose();
+        sceneManager.dispose();
+        sceneAsset.dispose();
+        environmentCubemap.dispose();
+        diffuseCubemap.dispose();
+        specularCubemap.dispose();
+        brdfLUT.dispose();
+        skybox.dispose();
+    }
+
+    @Override
+    public void onEnd(AnimationController.AnimationDesc animation) {
+//        scene.animationController.action("Fall", 1, 1f, this, 0.25f);
+    }
+
+    @Override
+    public void onLoop(AnimationController.AnimationDesc animation) {
+
     }
 }

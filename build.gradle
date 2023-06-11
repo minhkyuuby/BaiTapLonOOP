@@ -26,6 +26,7 @@ allprojects {
         ashleyVersion = '1.7.4'
         aiVersion = '1.8.2'
         gdxControllersVersion = '2.2.1'
+        gltfVersion = '-SNAPSHOT'
     }
 
     repositories {
@@ -68,6 +69,7 @@ project(":core") {
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         api "com.badlogicgames.gdx:gdx-ai:$aiVersion"
         api "com.badlogicgames.ashley:ashley:$ashleyVersion"
-        
+        api "com.github.mgsx-dev.gdx-gltf:gltf:$gltfVersion"
+
     }
 }
