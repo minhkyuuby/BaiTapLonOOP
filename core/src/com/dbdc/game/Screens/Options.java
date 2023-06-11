@@ -17,14 +17,6 @@ public class Options extends DefaultScreen {
     public Options(GameClass game) {
         super(game);
         stage = new Stage(new ScreenViewport());
-        Skin skin = new Skin(Gdx.files.internal("ui/Particle Park UI.json"));
-
-        Label title = new Label("Setting", skin, "big-black");
-        title.setAlignment(Align.center);
-        title.setY(Gdx.graphics.getHeight()*2/3);
-        title.setWidth(Gdx.graphics.getWidth());
-        stage.addActor(title);
-
         Label music;
     }
     @Override

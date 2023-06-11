@@ -2,9 +2,15 @@ package com.dbdc.game.Screens;
 
 import com.badlogic.gdx.Gdx;
 
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
+import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -33,7 +39,19 @@ public class MainMenu extends DefaultScreen {
         super(game);
         stage = new Stage();
 
-        font = game.getManager().get("futureFont.fnt",BitmapFont.class);
+        AssetManager manager = game.getManager();
+
+        FileHandleResolver resolver = new InternalFileHandleResolver();
+        manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
+        manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
+
+        FreetypeFontLoader.FreeTypeFontLoaderParameter mySmallFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+        mySmallFont.fontFileName = "fonts/futureFont.ttf";
+        mySmallFont.fontParameters.size = 10;
+        manager.load("fonts/futureFont.ttf", BitmapFont.class, mySmallFont);
+        manager.finishLoading();
+
+        font = manager.get("fonts/futureFont.ttf",BitmapFont.class);
 
         Label.LabelStyle ls = new Label.LabelStyle();
         ls.font = font;
