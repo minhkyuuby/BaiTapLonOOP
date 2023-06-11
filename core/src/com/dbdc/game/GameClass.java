@@ -1,26 +1,37 @@
 package com.dbdc.game;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.graphics.FPSLogger;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.dbdc.game.Screens.MainMenu;
 
 public class GameClass extends Game {
-//	SpriteBatch batch;
-//	Texture img;
-private FPSLogger fps;
+	private AssetManager manager;
+	public static int HEIGHT;
+	public static int WIDTH;
 
 	@Override
 	public void create () {
-//		batch = new SpriteBatch();
-//		img = new Texture("badlogic.jpg");
-		setScreen(new MainMenu(this));
+		
+		WIDTH = Gdx.graphics.getWidth();
+		HEIGHT = Gdx.graphics.getHeight();
 
-		fps = new FPSLogger();
+		manager = new AssetManager();
+
+		this.setScreen(new MainMenu(this));
 	}
 
 	@Override
 	public void render () {
+		super.render();
+	}
 
+	public void dispose() {
+		manager.dispose();
+	}
+
+	public AssetManager getManager() {
+		return manager;
 	}
 
 }
