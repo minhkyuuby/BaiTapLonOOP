@@ -3,6 +3,7 @@ package com.dbdc.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.dbdc.game.Screens.GamePlay;
 import com.dbdc.game.Screens.MainMenu;
 
 public class GameClass extends Game {
@@ -19,6 +20,7 @@ public class GameClass extends Game {
 		manager = new AssetManager();
 
 		this.setScreen(new MainMenu(this));
+//		this.setScreen(new GamePlay(this));
 	}
 
 	@Override

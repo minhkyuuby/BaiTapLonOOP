@@ -12,6 +12,7 @@ public abstract class DefaultScreen implements Screen {
 
     public abstract void update(float delta);
     public abstract void draw(float delta);
+//    public abstract void fixedUpdate(float delta);
     @Override
     public void show() {
 

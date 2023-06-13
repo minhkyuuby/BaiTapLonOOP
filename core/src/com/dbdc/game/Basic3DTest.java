@@ -1,139 +1,15 @@
 package com.dbdc.game;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
-import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
-import com.badlogic.gdx.math.Vector3;
-import net.mgsx.gltf.loaders.gltf.GLTFLoader;
-import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
-import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
-import net.mgsx.gltf.scene3d.lights.DirectionalLightEx;
-import net.mgsx.gltf.scene3d.scene.Scene;
-import net.mgsx.gltf.scene3d.scene.SceneAsset;
-import net.mgsx.gltf.scene3d.scene.SceneManager;
-import net.mgsx.gltf.scene3d.scene.SceneSkybox;
-import net.mgsx.gltf.scene3d.utils.IBLBuilder;
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.physics.bullet.Bullet;
+import com.dbdc.game.testScreens.BasicCollisionDetection;
 
-public class Basic3DTest extends ApplicationAdapter implements AnimationController.AnimationListener {
-    private SceneManager sceneManager;
-    private SceneAsset sceneAsset;
-    private Scene scene;
-    private PerspectiveCamera camera;
-    private Cubemap diffuseCubemap;
-    private Cubemap environmentCubemap;
-    private Cubemap specularCubemap;
-    private Texture brdfLUT;
-    private float time;
-    private SceneSkybox skybox;
-    private DirectionalLightEx light;
-    private FirstPersonCameraController cameraController;
+public class Basic3DTest extends Game {
+
 
     @Override
     public void create() {
-
-        // create scene
-        sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/character/skeleton-archer.gltf"));
-        scene = new Scene(sceneAsset.scene);
-        sceneManager = new SceneManager();
-        sceneManager.addScene(scene);
-
-        // setup camera (The BoomBox model is very small so you may need to adapt camera settings for your scene)
-        camera = new PerspectiveCamera(65f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        float d = .5f;
-        camera.near = d / 10f;
-        camera.far = 200;
-        sceneManager.setCamera(camera);
-        camera.position.set(0,0.5f, 4f);
-
-        cameraController = new FirstPersonCameraController(camera);
-        Gdx.input.setInputProcessor(cameraController);
-
-        // setup light
-        light = new DirectionalLightEx();
-        light.direction.set(1, -3, 1).nor();
-        light.color.set(Color.WHITE);
-        sceneManager.environment.add(light);
-
-        // setup quick IBL (image based lighting)
-        IBLBuilder iblBuilder = IBLBuilder.createOutdoor(light);
-        environmentCubemap = iblBuilder.buildEnvMap(1024);
-        diffuseCubemap = iblBuilder.buildIrradianceMap(256);
-        specularCubemap = iblBuilder.buildRadianceMap(10);
-        iblBuilder.dispose();
-
-        // This texture is provided by the library, no need to have it in your assets.
-        brdfLUT = new Texture(Gdx.files.classpath("net/mgsx/gltf/shaders/brdfLUT.png"));
-
-        sceneManager.setAmbientLight(1f);
-        sceneManager.environment.set(new PBRTextureAttribute(PBRTextureAttribute.BRDFLUTTexture, brdfLUT));
-        sceneManager.environment.set(PBRCubemapAttribute.createSpecularEnv(specularCubemap));
-        sceneManager.environment.set(PBRCubemapAttribute.createDiffuseEnv(diffuseCubemap));
-
-        // setup skybox
-        skybox = new SceneSkybox(environmentCubemap);
-        sceneManager.setSkyBox(skybox);
-
-        scene.animationController.setAnimation("Idle", -1);
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        sceneManager.updateViewport(width, height);
-    }
-
-    @Override
-    public void render() {
-        float deltaTime = Gdx.graphics.getDeltaTime();
-        time += deltaTime;
-
-        cameraController.update();
-//        scene.modelInstance.transform.rotate(Vector3.Y, 10f * deltaTime);
-
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            scene.animationController.action("Jump", 1, 1f, this, 0.25f);
-        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            scene.animationController.action("Attack(1h)", 1, 1f, this, 0.25f);
-        }
-        // render
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-        sceneManager.update(deltaTime);
-        sceneManager.render();
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void dispose() {
-        sceneManager.dispose();
-        sceneAsset.dispose();
-        environmentCubemap.dispose();
-        diffuseCubemap.dispose();
-        specularCubemap.dispose();
-        brdfLUT.dispose();
-        skybox.dispose();
-    }
-
-    @Override
-    public void onEnd(AnimationController.AnimationDesc animation) {
-//        scene.animationController.action("Fall", 1, 1f, this, 0.25f);
-    }
-
-    @Override
-    public void onLoop(AnimationController.AnimationDesc animation) {
-
+        Bullet.init();
+        setScreen(new BasicCollisionDetection());
     }
 }

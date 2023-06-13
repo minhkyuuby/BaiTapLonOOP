@@ -2,6 +2,7 @@ package com.dbdc.game;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.jpcodes.physics.BulletPhysics;
 
 // Please note that on macOS your application needs to be started with the -XstartOnFirstThread JVM argument
 public class DesktopLauncher {
@@ -13,5 +14,6 @@ public class DesktopLauncher {
 		config.useVsync(true);
 //		new Lwjgl3Application(new Drop(), config);
 		new Lwjgl3Application(new GameClass(), config);
+//		new Lwjgl3Application(new BulletPhysics(), config);
 	}
 }
