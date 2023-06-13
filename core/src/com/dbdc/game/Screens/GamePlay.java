@@ -37,6 +37,8 @@ public class GamePlay extends PhysicScreen {
 
     private final DynamicCharacterController playerController;
     private SceneAsset levelAsset;
+    private SceneAsset playerAsset;
+
     private Scene playerScene;
 
     public GamePlay(GameClass game) {
@@ -76,13 +78,13 @@ public class GamePlay extends PhysicScreen {
 
     @Override
     public void dispose() {
-        super.dispose();
         levelAsset.dispose();
+        super.dispose();
     }
 
     private BulletEntity createPlayer() {
-        levelAsset = new GLTFLoader().load(Gdx.files.internal("models/character/skeleton-archer.gltf"));
-        playerScene = new Scene(levelAsset.scene);
+        playerAsset = new GLTFLoader().load(Gdx.files.internal("models/character/skeleton-archer.gltf"));
+        playerScene = new Scene(playerAsset.scene);
         ModelInstance playerModelInstance = playerScene.modelInstance;
 
         // Move him up above the ground
@@ -96,13 +98,6 @@ public class GamePlay extends PhysicScreen {
 
         // Scale for half extents
         dimensions.scl(0.5f);
-        Matrix4 modelTransform = new Matrix4();
-        modelTransform.set(playerModelInstance.transform);
-
-        Vector3 position = modelTransform.getTranslation(new Vector3());
-        position.y = position.y;
-
-        modelTransform.setTranslation(position);
         MotionState motionState = new MotionState(playerModelInstance.transform);
         btCapsuleShape capsuleShape = new btCapsuleShape(dimensions.len() / 2.5f, dimensions.y);
 

@@ -68,6 +68,7 @@ public class TestScreen extends BaseScreen {
     public void dispose() {
         super.dispose();
         controller.getPlayerSceneAsset().dispose();
+
     }
 
     private BulletEntity createPlayer() {
