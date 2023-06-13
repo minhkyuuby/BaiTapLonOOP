@@ -3,10 +3,10 @@ package com.dbdc.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.dbdc.game.Screens.MainMenu;
 
 public class GameClass extends Game {
-	private AssetManager manager;
 	public static int HEIGHT;
 	public static int WIDTH;
 
@@ -15,8 +15,6 @@ public class GameClass extends Game {
 		
 		WIDTH = Gdx.graphics.getWidth();
 		HEIGHT = Gdx.graphics.getHeight();
-
-		manager = new AssetManager();
 
 		this.setScreen(new MainMenu(this));
 	}
@@ -27,11 +25,7 @@ public class GameClass extends Game {
 	}
 
 	public void dispose() {
-		manager.dispose();
-	}
 
-	public AssetManager getManager() {
-		return manager;
 	}
 
 }
