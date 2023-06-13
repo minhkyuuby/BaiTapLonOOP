@@ -2,9 +2,9 @@ package com.dbdc.game.Screens;
 
 import com.badlogic.gdx.Gdx;
 
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -17,33 +17,23 @@ import com.dbdc.game.GameClass;
 import com.dbdc.game.manager.Assets;
 
 
-public class MainMenu extends DefaultScreen {
+public class MainMenu implements Screen {
+    protected GameClass game;
     private Stage stage;
-    private LevelSelecting levelSelecting = new LevelSelecting(game);
-    private Options options = new Options(game);
-    private GamePlay gamePlay = new GamePlay(game);
-    private AboutUs aboutUs = new AboutUs(game);
+    private LevelSelecting levelSelecting;
+    private Options options;
+    private GamePlay gamePlay;
+    private AboutUs aboutUs;
     private Button ngButton, levelButton, optionsButton, exitButton, auButton;
     private Table table;
     private Texture bgTexture = new Texture(Assets.bg);
 
     public MainMenu(final GameClass game) {
-        super(game);
-    }
-
-    @Override
-    public void update(float delta) {
-
-    }
-
-    @Override
-    public void draw(float delta) {
-
+        this.game = game;
     }
 
     @Override
     public void show() {
-//        batch = new SpriteBatch();
         stage = new Stage(new ScreenViewport());
 
         Texture playBtnTexture = new Texture(Gdx.files.internal(Assets.playbtn));
@@ -78,6 +68,11 @@ public class MainMenu extends DefaultScreen {
         table.setPosition(0,-80);
         table.align(Align.center);
 
+        gamePlay = new GamePlay(game);
+        levelSelecting = new LevelSelecting(game);
+        options = new Options(game);
+        aboutUs = new AboutUs(game);
+
         ngButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -105,7 +100,7 @@ public class MainMenu extends DefaultScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 stage.addAction(Actions.sequence(
-                        Actions.fadeOut(1),
+                        Actions.fadeOut(0.3f),
                         Actions.run(new Runnable() {
                             @Override
                             public void run() {
@@ -130,13 +125,27 @@ public class MainMenu extends DefaultScreen {
     }
 
     @Override
+    public void resize(int width, int height) {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
     public void hide() {
 
     }
 
     @Override
     public void dispose() {
-        batch.dispose();
         stage.dispose();
     }
 

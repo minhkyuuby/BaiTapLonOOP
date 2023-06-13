@@ -27,5 +27,4 @@ public class GameClass extends Game {
 	public void dispose() {
 
 	}
-
 }
