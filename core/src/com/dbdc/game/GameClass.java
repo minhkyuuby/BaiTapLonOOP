@@ -3,8 +3,10 @@ package com.dbdc.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.physics.bullet.Bullet;
 import com.dbdc.game.Screens.GamePlay;
 import com.dbdc.game.Screens.MainMenu;
+import com.kotcrab.vis.ui.VisUI;
 
 public class GameClass extends Game {
 	private AssetManager manager;
@@ -13,7 +15,9 @@ public class GameClass extends Game {
 
 	@Override
 	public void create () {
-		
+		Bullet.init();
+		if (!VisUI.isLoaded())
+			VisUI.load();
 		WIDTH = Gdx.graphics.getWidth();
 		HEIGHT = Gdx.graphics.getHeight();
 

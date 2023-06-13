@@ -14,6 +14,10 @@ public class BulletEntity {
         this.modelScene = modelScene;
     }
 
+    public Scene getModelScene() {
+        return modelScene;
+    }
+
     public ModelInstance getModelInstance() {
         return modelScene.modelInstance;
     }

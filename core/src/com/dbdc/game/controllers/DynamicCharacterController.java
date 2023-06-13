@@ -10,7 +10,7 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.jpcodes.physics.BulletPhysicsSystem;
 import com.jpcodes.physics.utils.Utils3D;
 
-public class DynamicCharacterController implements AnimationController.AnimationListener{
+public class DynamicCharacterController implements AnimationController.AnimationListener {
     private final float MOVE_SPEED = 30f;
     private final float JUMP_FACTOR = 15f;
 
@@ -26,6 +26,10 @@ public class DynamicCharacterController implements AnimationController.Animation
     private AnimationController animationController;
     private final BulletPhysicsSystem physicsSystem;
     private final ClosestNotMeRayResultCallback callback;
+
+    public BulletEntity getCharacter() {
+        return character;
+    }
 
     public DynamicCharacterController(BulletEntity entity, BulletPhysicsSystem bulletPhysicsSystem) {
         character = entity;
