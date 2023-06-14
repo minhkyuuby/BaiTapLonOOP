@@ -11,7 +11,7 @@ import com.jpcodes.physics.BulletPhysicsSystem;
 import com.jpcodes.physics.utils.Utils3D;
 
 public class DynamicCharacterController implements AnimationController.AnimationListener {
-    private final float MOVE_SPEED = 32f;
+    private final float MOVE_SPEED = 28f;
     private final float JUMP_FACTOR = 15f;
 
     private final Vector3 position = new Vector3();
@@ -63,9 +63,9 @@ public class DynamicCharacterController implements AnimationController.Animation
 
         // Forward movement
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            linearVelocity.set(currentDirection).scl(delta * MOVE_SPEED * 1.5f);
+            linearVelocity.set(currentDirection).scl(delta * MOVE_SPEED * 1.8f);
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            linearVelocity.set(currentDirection).scl(-delta * MOVE_SPEED * 1.5f);
+            linearVelocity.set(currentDirection).scl(-delta * MOVE_SPEED * 1.8f);
         }
 
         // Turning
@@ -78,7 +78,7 @@ public class DynamicCharacterController implements AnimationController.Animation
         // Jump
         if (isOnGround && Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             linearVelocity.y += JUMP_FACTOR;
-            animationController.action("Jump", 1, 1.5f, this, 0f);
+            animationController.action("Jump", 1, 1.8f, this, 0f);
         }
 
         if(Gdx.input.isKeyPressed(Input.Keys.J)) {

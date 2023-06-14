@@ -10,6 +10,7 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(60);
 		config.setTitle("danh-bai-dai-cuong");
+		config.setBackBufferConfig(8,8,8,8,16, 0, 4);
 		config.setWindowedMode(1280, 720);
 		config.useVsync(true);
 //		new Lwjgl3Application(new Drop(), config);

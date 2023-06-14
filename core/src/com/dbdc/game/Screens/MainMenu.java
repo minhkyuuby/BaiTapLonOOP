@@ -21,7 +21,7 @@ public class MainMenu extends DefaultScreen {
     private Stage stage;
     private LevelSelecting levelSelecting = new LevelSelecting(game);
     private Options options = new Options(game);
-    private GamePlay gamePlay = new GamePlay(game);
+//    private GamePlay gamePlay = new GamePlay(game);
     private AboutUs aboutUs = new AboutUs(game);
     private Button ngButton, levelButton, optionsButton, exitButton, auButton;
     private Table table;
@@ -81,7 +81,7 @@ public class MainMenu extends DefaultScreen {
         ngButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(gamePlay);
+                game.setScreen(new GamePlay(game));
             };
         });
         levelButton.addListener(new ClickListener() {

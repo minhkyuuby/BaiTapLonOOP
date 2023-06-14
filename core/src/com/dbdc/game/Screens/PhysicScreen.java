@@ -3,6 +3,7 @@ package com.dbdc.game.Screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
@@ -24,12 +25,14 @@ import com.kotcrab.vis.ui.widget.VisLabel;
 import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
 import net.mgsx.gltf.scene3d.lights.DirectionalLightEx;
+import net.mgsx.gltf.scene3d.lights.DirectionalShadowLight;
+import net.mgsx.gltf.scene3d.scene.CascadeShadowMap;
 import net.mgsx.gltf.scene3d.scene.Scene;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
 import net.mgsx.gltf.scene3d.scene.SceneSkybox;
 import net.mgsx.gltf.scene3d.utils.IBLBuilder;
 
-public class PhysicScreen extends DefaultScreen{
+public class PhysicScreen extends ScreenAdapter {
 
     private static boolean drawDebug = false;
 
@@ -39,17 +42,10 @@ public class PhysicScreen extends DefaultScreen{
     protected Array<ModelInstance> renderInstances;
     protected BulletPhysicsSystem bulletPhysicsSystem;
 
-    private final Array<Color> colors;
-
     private final Stage stage;
     private final VisLabel fpsLabel;
 
-    final float GRID_MIN = -100f;
-    final float GRID_MAX = 100f;
-    final float GRID_STEP = 10f;
-
     private SceneManager sceneManager;
-    protected Array<ModelInstance> renderScenes;
     private Cubemap diffuseCubemap;
     private Cubemap environmentCubemap;
     private Cubemap specularCubemap;
@@ -58,9 +54,12 @@ public class PhysicScreen extends DefaultScreen{
     private SceneSkybox skybox;
     private DirectionalLightEx light;
 
+    protected GameClass game;
 
+    CascadeShadowMap csm;
+    DirectionalShadowLight shadowLight;
     public PhysicScreen(GameClass game) {
-        super(game);
+        this.game = game;
         sceneManager = new SceneManager();
 
         bulletPhysicsSystem = new BulletPhysicsSystem();
@@ -84,13 +83,6 @@ public class PhysicScreen extends DefaultScreen{
         ((FirstPersonCameraController) cameraController).setDegreesPerPixel(0.2f);
         Gdx.input.setInputProcessor(cameraController);
 
-        colors = new Array<>();
-        colors.add(Color.PURPLE);
-        colors.add(Color.BLUE);
-        colors.add(Color.TEAL);
-        colors.add(Color.BROWN);
-        colors.add(Color.FIREBRICK);
-
         // setup Scenes
         sceneManager.setCamera(camera);
 
@@ -113,36 +105,31 @@ public class PhysicScreen extends DefaultScreen{
         sceneManager.environment.set(new PBRTextureAttribute(PBRTextureAttribute.BRDFLUTTexture, brdfLUT));
         sceneManager.environment.set(PBRCubemapAttribute.createSpecularEnv(specularCubemap));
         sceneManager.environment.set(PBRCubemapAttribute.createDiffuseEnv(diffuseCubemap));
-
+        sceneManager.setCascadeShadowMap(new CascadeShadowMap(1));
         // setup skybox
         skybox = new SceneSkybox(environmentCubemap);
         sceneManager.setSkyBox(skybox);
-
+        csm = new CascadeShadowMap(2);
+        sceneManager.setCascadeShadowMap(csm);
     }
 
     @Override
-    public void update(float delta) {
-//        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-//            game.setScreen(new LevelSelecting(game));
-//            dispose();
-//        }
+    public void render(float delta) {
+        super.render(delta);
         if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
             drawDebug = !drawDebug;
         }
 
-
         bulletPhysicsSystem.update(delta);
         cameraController.update(delta);
-        sceneManager.update(delta);
         ScreenUtils.clear(Color.BLACK, true);
-
         if (drawDebug) {
             bulletPhysicsSystem.render(camera);
+            modelBatch.begin(camera);
+            modelBatch.render(renderInstances);
+            modelBatch.end();
         }
-    }
-
-    @Override
-    public void draw(float delta) {
+        sceneManager.update(delta);
         sceneManager.render();
         stage.act();
         stage.draw();
@@ -159,39 +146,13 @@ public class PhysicScreen extends DefaultScreen{
         Gdx.input.setInputProcessor(cameraController);
     }
 
-    protected void createFloor(float width, float height, float depth) {
-        ModelBuilder modelBuilder = new ModelBuilder();
-        modelBuilder.begin();
-        MeshPartBuilder meshBuilder = modelBuilder.part("floor", GL20.GL_TRIANGLES, VertexAttribute.Position().usage |VertexAttribute.Normal().usage | VertexAttribute.TexCoords(0).usage, new Material());
-
-        BoxShapeBuilder.build(meshBuilder, width, height, depth);
-        btBoxShape btBoxShape = new btBoxShape(new Vector3(width/2f, height/2f, depth/2f));
-        Model floor = modelBuilder.end();
-
-        ModelInstance floorInstance = new ModelInstance(floor);
-        floorInstance.transform.trn(0, -0.5f, 0f);
-
-        btRigidBody.btRigidBodyConstructionInfo info = new btRigidBody.btRigidBodyConstructionInfo(0, null, btBoxShape, Vector3.Zero);
-        btRigidBody body = new btRigidBody(info);
-
-        body.setWorldTransform(floorInstance.transform);
-
-        renderInstances.add(floorInstance);
-        bulletPhysicsSystem.addBody(body);
-    }
-
-    protected Color getRandomColor(){
-        return colors.get(MathUtils.random(0, colors.size-1));
-    }
-
     @Override
     public void dispose() {
         super.dispose();
         sceneManager.dispose();
-        environmentCubemap.dispose();
-        diffuseCubemap.dispose();
-        specularCubemap.dispose();
-        brdfLUT.dispose();
+        stage.dispose();
         skybox.dispose();
+        modelBatch.dispose();
+        bulletPhysicsSystem.dispose();
     }
 }

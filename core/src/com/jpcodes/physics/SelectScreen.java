@@ -10,7 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.jpcodes.physics.screens.TestScreen;
+import com.jpcodes.physics.screens.DynamicCharacterScreen;
+//import com.jpcodes.physics.screens.TestScreen;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisSelectBox;
@@ -42,7 +43,7 @@ public class SelectScreen extends ScreenAdapter {
             public void changed(ChangeEvent event, Actor actor) {
                 switch (screenSelect.getSelected()) {
                     case TestScreen:
-                        game.setScreen(new TestScreen(game));
+                        game.setScreen(new DynamicCharacterScreen(game));
                         break;
 //                    case RigidBodyDynamics:
 //                        game.setScreen(new RigidBodyPhysics(game));

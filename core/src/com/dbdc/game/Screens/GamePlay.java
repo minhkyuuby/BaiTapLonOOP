@@ -36,9 +36,9 @@ public class GamePlay extends PhysicScreen {
 
 
     private final DynamicCharacterController playerController;
-    private SceneAsset levelAsset;
+//    private SceneAsset levelAsset;
     private SceneAsset playerAsset;
-
+    private SceneAsset levelAsset;
     private Scene playerScene;
 
     public GamePlay(GameClass game) {
@@ -54,32 +54,38 @@ public class GamePlay extends PhysicScreen {
         camera.position.set(new Vector3(0, 10, -10));
         camera.lookAt(Vector3.Zero);
 
+
+    }
+
+    @Override
+    public void show() {
+        super.show();
         // Load a walkable area
         levelAsset = new GLTFLoader().load(Gdx.files.internal("models/level.gltf"));
         Scene levelScene = new Scene(levelAsset.scene);
-        Model sceneModel = Utils3D.loadOBJ(Gdx.files.internal("models/level.obj"));
+        Model sceneModel = Utils3D.loadOBJ(Gdx.files.internal("models/level/level.obj"));
         ModelInstance sceneInstance = new ModelInstance(sceneModel);
         sceneInstance.materials.get(0).set(ColorAttribute.createDiffuse(Color.FOREST));
 
         addSceneToSceneManager(levelScene);
-//        renderInstances.add(sceneInstance);
+        renderInstances.add(sceneInstance);
 
         btCollisionShape shape = Bullet.obtainStaticNodeShape(sceneInstance.nodes);
         btRigidBody.btRigidBodyConstructionInfo sceneInfo = new btRigidBody.btRigidBodyConstructionInfo(0f, null, shape, Vector3.Zero);
         btRigidBody body = new btRigidBody(sceneInfo);
+        sceneInfo.dispose();
         bulletPhysicsSystem.addBody(body);
     }
 
     @Override
-    public void update(float delta) {
-        super.update(delta);
+    public void render(float delta) {
+        super.render(delta);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            game.setScreen(new MainMenu(game));
+            this.hide();
+            return;
+        }
         playerController.update(delta);
-    }
-
-    @Override
-    public void dispose() {
-        levelAsset.dispose();
-        super.dispose();
     }
 
     private BulletEntity createPlayer() {
@@ -120,7 +126,19 @@ public class GamePlay extends PhysicScreen {
 
         renderInstances.add(playerModelInstance);
         bulletPhysicsSystem.addBody(body);
-
+        info.dispose();
         return new BulletEntity(body, playerScene);
+    }
+
+    @Override
+    public void hide() {
+        super.hide();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        playerAsset.dispose();
+        levelAsset.dispose();
     }
 }
