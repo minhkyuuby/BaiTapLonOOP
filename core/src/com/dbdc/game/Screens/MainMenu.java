@@ -29,6 +29,7 @@ public class MainMenu extends DefaultScreen {
 
     public MainMenu(final GameClass game) {
         super(game);
+        game.audioManager.playBackgroundMusic();
     }
 
     @Override
@@ -131,7 +132,7 @@ public class MainMenu extends DefaultScreen {
 
     @Override
     public void hide() {
-
+        game.audioManager.stopBackgroundMusic();
     }
 
     @Override
