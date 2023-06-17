@@ -32,13 +32,13 @@ public class AboutUs implements Screen {
         Image auImage = new Image(auscreenTexture);
 
         stage.addAction(Actions.sequence(Actions.alpha(0,0f),Actions.fadeIn(0.3f)));
-        stage.addActor(auImage);
 
         Texture backBtnTexture = new Texture(Gdx.files.internal(Assets.backbtn));
         backButton = new ImageButton(new TextureRegionDrawable(backBtnTexture));
 
-        backButton.setPosition(40,600);
+        backButton.setPosition(50,600);
 
+        stage.addActor(auImage);
         stage.addActor(backButton);
 
         backButton.addListener(new ClickListener() {
@@ -56,7 +56,7 @@ public class AboutUs implements Screen {
             }
         });
 
-         Gdx.input.setInputProcessor(stage);
+        Gdx.input.setInputProcessor(stage);
     }
     @Override
     public void render(float delta) {

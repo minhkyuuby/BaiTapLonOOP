@@ -64,7 +64,7 @@ public class MainMenu implements Screen {
         table.row();
         table.add(optionsButton).padTop(10f);
         table.row();
-        table.add(exitButton).padTop(5f);
+        table.add(exitButton).padTop(8f);
         table.row();
         table.add(auButton).padTop(5f);
         table.setPosition(0,-80);
@@ -83,8 +83,17 @@ public class MainMenu implements Screen {
         });
         levelButton.addListener(new ClickListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y) {game.setScreen(levelSelecting);
-            };
+            public void clicked(InputEvent event, float x, float y) {
+                stage.addAction(Actions.sequence(
+                        Actions.fadeOut(0.3f),
+                        Actions.run(new Runnable() {
+                            @Override
+                            public void run() {
+                                game.setScreen(levelSelecting);
+                            }
+                        })
+                ));
+            }
         });
         optionsButton.addListener(new ClickListener() {
             @Override

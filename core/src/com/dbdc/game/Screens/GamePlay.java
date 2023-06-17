@@ -94,7 +94,7 @@ public class GamePlay extends PhysicScreen {
         ModelInstance playerModelInstance = playerScene.modelInstance;
 
         // Move him up above the ground
-        playerModelInstance.transform.setToTranslation(0,10,0);
+        playerModelInstance.transform.setToTranslation(0,10,5);
 
         // Calculate dimension
         BoundingBox boundingBox = new BoundingBox();
