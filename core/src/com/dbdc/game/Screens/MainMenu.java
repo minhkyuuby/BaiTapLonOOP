@@ -5,24 +5,26 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.dbdc.game.GameClass;
 import com.dbdc.game.manager.Assets;
+import com.dbdc.game.manager.AudioManager;
 
 
 public class MainMenu implements Screen {
     protected GameClass game;
     private Stage stage;
+    private TextureAtlas atlas;
+    private Skin skin;
     private LevelSelecting levelSelecting = new LevelSelecting(game);
     private Options options = new Options(game);
-//    private GamePlay gamePlay = new GamePlay(game);
     private AboutUs aboutUs = new AboutUs(game);
     private Button ngButton, levelButton, optionsButton, exitButton, auButton;
     private Table table;
@@ -37,17 +39,33 @@ public class MainMenu implements Screen {
         game.audioManager.playBackgroundMusic();
 
         stage = new Stage(new ScreenViewport());
+        atlas = new TextureAtlas("screen/menuskin.pack");
+        skin = new Skin(atlas);
 
-        Texture playBtnTexture = new Texture(Gdx.files.internal(Assets.playbtn));
-        ngButton = new ImageButton(new TextureRegionDrawable(playBtnTexture));
-        Texture levelBtnTexture = new Texture(Gdx.files.internal(Assets.levelbtn));
-        levelButton = new ImageButton(new TextureRegionDrawable(levelBtnTexture));
-        Texture optionBtnTexture = new Texture(Gdx.files.internal(Assets.optionbtn));
-        optionsButton = new ImageButton(new TextureRegionDrawable(optionBtnTexture));
-        Texture exitBtnTexture = new Texture(Gdx.files.internal(Assets.exitbtn));
-        exitButton = new ImageButton(new TextureRegionDrawable(exitBtnTexture));
-        Texture auBtnTexture = new Texture(Gdx.files.internal(Assets.aubtn));
-        auButton = new ImageButton(new TextureRegionDrawable(auBtnTexture));
+        ImageButton.ImageButtonStyle playStyle = new ImageButton.ImageButtonStyle();
+        playStyle.up = skin.getDrawable("play_up");
+        playStyle.down = skin.getDrawable("play_down");
+        ngButton = new ImageButton(playStyle);
+
+        ImageButton.ImageButtonStyle levelStyle = new ImageButton.ImageButtonStyle();
+        levelStyle.up = skin.getDrawable("level_up");
+        levelStyle.down = skin.getDrawable("level_down");
+        levelButton = new ImageButton(levelStyle);
+
+        ImageButton.ImageButtonStyle optionStyle = new ImageButton.ImageButtonStyle();
+        optionStyle.up = skin.getDrawable("option_up");
+        optionStyle.down = skin.getDrawable("option_down");
+        optionsButton = new ImageButton(optionStyle);
+
+        ImageButton.ImageButtonStyle exitStyle = new ImageButton.ImageButtonStyle();
+        exitStyle.up = skin.getDrawable("exit_up");
+        exitStyle.down = skin.getDrawable("exit_down");
+        exitButton = new ImageButton(exitStyle);
+
+        ImageButton.ImageButtonStyle auStyle = new ImageButton.ImageButtonStyle();
+        auStyle.up = skin.getDrawable("aboutus_up");
+        auStyle.down = skin.getDrawable("aboutus_down");
+        auButton = new ImageButton(auStyle);
 
         Image bgImage = new Image(bgTexture);
         stage.addActor(bgImage);
@@ -66,11 +84,10 @@ public class MainMenu implements Screen {
         table.row();
         table.add(exitButton).padTop(8f);
         table.row();
-        table.add(auButton).padTop(5f);
+        table.add(auButton).padTop(10f);
         table.setPosition(0,-80);
         table.align(Align.center);
 
-//        gamePlay = new GamePlay(game);
         levelSelecting = new LevelSelecting(game);
         options = new Options(game);
         aboutUs = new AboutUs(game);
@@ -78,12 +95,14 @@ public class MainMenu implements Screen {
         ngButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                game.audioManager.playSoundEffect(AudioManager.click);
                 game.setScreen(new GamePlay(game));
             };
         });
         levelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                game.audioManager.playSoundEffect(AudioManager.click);
                 stage.addAction(Actions.sequence(
                         Actions.fadeOut(0.3f),
                         Actions.run(new Runnable() {
@@ -98,18 +117,21 @@ public class MainMenu implements Screen {
         optionsButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                game.audioManager.playSoundEffect(AudioManager.click);
                 game.setScreen(options);
             };
         });
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                game.audioManager.playSoundEffect(AudioManager.click);
                 Gdx.app.exit();
             };
         });
         auButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                game.audioManager.playSoundEffect(AudioManager.click);
                 stage.addAction(Actions.sequence(
                         Actions.fadeOut(0.3f),
                         Actions.run(new Runnable() {
@@ -158,6 +180,8 @@ public class MainMenu implements Screen {
     @Override
     public void dispose() {
         stage.dispose();
+        atlas.dispose();
+        skin.dispose();
     }
 
 }

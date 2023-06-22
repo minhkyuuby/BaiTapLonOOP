@@ -6,14 +6,15 @@ import com.badlogic.gdx.audio.Sound;
 
 public class AudioManager {
     private static final float DEFAULT_VOLUME = 1.0f;
-
     private Music backgroundMusic;
     private Sound soundEffect;
+    public static Sound click;
 
     public AudioManager() {
         // Initialize your audio resources here
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("music/mp3/Ambient 1.mp3"));
         soundEffect = Gdx.audio.newSound(Gdx.files.internal("music/mp3/Death.mp3"));
+        click = Gdx.audio.newSound(Gdx.files.internal("music/mp3/click.wav"));
     }
 
     public void playBackgroundMusic() {
@@ -42,5 +43,6 @@ public class AudioManager {
         // Dispose of your audio resources here
         backgroundMusic.dispose();
         soundEffect.dispose();
+        click.dispose();
     }
 }

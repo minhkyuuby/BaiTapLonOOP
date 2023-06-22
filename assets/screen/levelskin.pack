@@ -1,0 +1,90 @@
+
+levelskin.png
+size: 2048, 128
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+back_down
+  rotate: false
+  xy: 1804, 2
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+back_up
+  rotate: false
+  xy: 1702, 2
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+daiso_down
+  rotate: false
+  xy: 2, 37
+  size: 168, 65
+  orig: 168, 65
+  offset: 0, 0
+  index: -1
+daiso_up
+  rotate: false
+  xy: 682, 37
+  size: 168, 65
+  orig: 168, 65
+  offset: 0, 0
+  index: -1
+gt1_down
+  rotate: false
+  xy: 852, 37
+  size: 168, 65
+  orig: 168, 65
+  offset: 0, 0
+  index: -1
+gt1_up
+  rotate: false
+  xy: 1362, 37
+  size: 168, 65
+  orig: 168, 65
+  offset: 0, 0
+  index: -1
+gt2_down
+  rotate: false
+  xy: 1532, 37
+  size: 168, 65
+  orig: 168, 65
+  offset: 0, 0
+  index: -1
+gt2_up
+  rotate: false
+  xy: 1192, 37
+  size: 168, 65
+  orig: 168, 65
+  offset: 0, 0
+  index: -1
+gt3_down
+  rotate: false
+  xy: 172, 37
+  size: 168, 65
+  orig: 168, 65
+  offset: 0, 0
+  index: -1
+gt3_up
+  rotate: false
+  xy: 1022, 37
+  size: 168, 65
+  orig: 168, 65
+  offset: 0, 0
+  index: -1
+vl_down
+  rotate: false
+  xy: 342, 37
+  size: 168, 65
+  orig: 168, 65
+  offset: 0, 0
+  index: -1
+vl_up
+  rotate: false
+  xy: 512, 37
+  size: 168, 65
+  orig: 168, 65
+  offset: 0, 0
+  index: -1
