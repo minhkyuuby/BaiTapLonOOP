@@ -100,6 +100,10 @@ public class BulletPhysicsSystem implements Disposable {
         dynamicsWorld.addRigidBody(body);
     }
 
+    public void removeBody(btRigidBody body) {
+        dynamicsWorld.removeRigidBody(body);
+    }
+
     /**
      * Perform a raycast in the physics world.
      * @param from the starting position (origin) of the ray

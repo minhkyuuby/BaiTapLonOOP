@@ -140,6 +140,9 @@ public class PhysicScreen extends ScreenAdapter {
         sceneManager.addScene(scene);
     }
 
+    protected void removeSceneFromSceneManager(Scene scene) {
+        sceneManager.removeScene(scene);
+    }
 
     public void setCameraController(CameraController cameraController) {
         this.cameraController = cameraController;

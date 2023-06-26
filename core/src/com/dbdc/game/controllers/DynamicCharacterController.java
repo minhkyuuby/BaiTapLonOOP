@@ -11,8 +11,12 @@ import com.jpcodes.physics.BulletPhysicsSystem;
 import com.jpcodes.physics.utils.Utils3D;
 
 public class DynamicCharacterController implements AnimationController.AnimationListener {
+
+    public static float ATTACK_RADIUS = 2f;
     private final float MOVE_SPEED = 28f;
     private final float JUMP_FACTOR = 15f;
+
+    public boolean isAttacking = false;
 
     private final Vector3 position = new Vector3();
     private final Vector3 normal = new Vector3();
@@ -81,8 +85,9 @@ public class DynamicCharacterController implements AnimationController.Animation
             animationController.action("Jump", 1, 1.8f, this, 0f);
         }
 
-        if(Gdx.input.isKeyPressed(Input.Keys.J)) {
-            animationController.action("AttackSpinning", 1, 1.5f, this, 0.2f);
+        if(Gdx.input.isKeyPressed(Input.Buttons.LEFT) || Gdx.input.isKeyPressed(Input.Buttons.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.J)) {
+            animationController.action("AttackSpinning", 1, 1.5f, this, 0f);
+            isAttacking = true;
         }
 
         if (!linearVelocity.isZero()) {
@@ -121,7 +126,10 @@ public class DynamicCharacterController implements AnimationController.Animation
 
     @Override
     public void onEnd(AnimationController.AnimationDesc animation) {
-
+        if(animation.animation.id.equals("AttackSpinning")) {
+            System.out.println("Attacked!");
+            isAttacking = false;
+        }
     }
 
     @Override
