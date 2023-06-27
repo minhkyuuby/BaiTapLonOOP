@@ -127,7 +127,7 @@ public class DynamicCharacterController implements AnimationController.Animation
     @Override
     public void onEnd(AnimationController.AnimationDesc animation) {
         if(animation.animation.id.equals("AttackSpinning")) {
-            System.out.println("Attacked!");
+//            System.out.println("Attacked!");
             isAttacking = false;
         }
     }

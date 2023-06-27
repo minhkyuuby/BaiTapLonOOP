@@ -24,7 +24,8 @@ public class EnemyController implements AnimationController.AnimationListener {
 
     private AnimationController animationController;
     private final BulletPhysicsSystem physicsSystem;
-    private final ClosestNotMeRayResultCallback callback;
+
+    public boolean isDefeated, isAttacking, shouldBeDestroy;
 
     public BulletEntity getCharacter() {
         return character;
@@ -33,9 +34,11 @@ public class EnemyController implements AnimationController.AnimationListener {
     public EnemyController(BulletEntity entity, BulletPhysicsSystem bulletPhysicsSystem) {
         character = entity;
         physicsSystem = bulletPhysicsSystem;
-        callback = new ClosestNotMeRayResultCallback(character.getBody());
         animationController = character.getAnimationController();
-        animationController.setAnimation("Idle", -1);
+        animationController.setAnimation("Run", -1);
+        isDefeated = false;
+        isAttacking = false;
+        shouldBeDestroy = false;
     }
 
     public void update(float delta) {
@@ -47,9 +50,27 @@ public class EnemyController implements AnimationController.AnimationListener {
         linearVelocity.set(0,0,0);
     }
 
+    public void Death() {
+        animationController.animate("Defeat", 1, 1f, this, 0.25f);
+        isDefeated = true;
+    }
+
+    public void Attack() {
+        if(!isDefeated) {
+            animationController.action("AttackSpinning", 1, 1.5f, this, 0f);
+            isAttacking = true;
+        }
+    }
+
     @Override
     public void onEnd(AnimationController.AnimationDesc animation) {
-
+        if(animation.animation.id.equals("Defeat")) {
+//            System.out.println("Defeated!");
+            shouldBeDestroy = true;
+        }
+        if(animation.animation.id.equals("AttackSpinning")) {
+            isAttacking = false;
+        }
     }
 
     @Override

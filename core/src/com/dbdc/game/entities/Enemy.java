@@ -14,4 +14,5 @@ public class Enemy extends BulletEntity {
         currentState = states;
     }
 
+
 }

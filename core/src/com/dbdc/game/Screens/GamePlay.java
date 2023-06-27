@@ -14,12 +14,15 @@ import com.badlogic.gdx.physics.bullet.collision.btCapsuleShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.dbdc.game.GameClass;
 import com.dbdc.game.controllers.DynamicCharacterController;
 import com.dbdc.game.controllers.EnemyController;
 import com.dbdc.game.entities.BulletEntity;
+import com.dbdc.game.entities.InteractableEntity;
+import com.dbdc.game.entities.InteractableType;
 import com.dbdc.game.entities.Item;
 import com.jpcodes.physics.MotionState;
 import com.jpcodes.physics.controllers.camera.ThirdPersonCameraController;
@@ -39,18 +42,23 @@ public class GamePlay extends PhysicScreen {
     private final DynamicCharacterController playerController;
     private SceneAsset playerAsset;
     private SceneAsset levelAsset;
+    private SceneAsset itemAsset;
     private Scene playerScene;
 
-    private List<Item> levelItems;
-
-    private List<EnemyController> enemies;
 
     // UI components
     private final Stage stage;
     private final VisLabel bookCountLabel;
 
+    private final VisLabel isInteractableLabel;
+
     // Gameplay params
     int bookCollected;
+    boolean isInExamArea;
+    private List<Item> levelItems;
+    private List<EnemyController> enemies;
+    private List<EnemyController> diedEnemies;
+    private List<InteractableEntity> interactableItems;
 
     public GamePlay(GameClass game) {
         super(game);
@@ -68,11 +76,18 @@ public class GamePlay extends PhysicScreen {
         bookCountLabel = new VisLabel();
         bookCountLabel.setPosition(10f,Gdx.graphics.getHeight() -10);
         stage.addActor(bookCountLabel);
+        isInteractableLabel = new VisLabel();
+        isInteractableLabel.setPosition(Gdx.graphics.getWidth(),Gdx.graphics.getHeight() -10);
+        isInteractableLabel.setAlignment(isInteractableLabel.getLabelAlign(), Align.right);
+        stage.addActor(isInteractableLabel);
 
         /*  gameplay setup *///
         bookCollected = 0;
+        isInExamArea = false;
         levelItems = new ArrayList<>();
         enemies = new ArrayList<>();
+        diedEnemies = new ArrayList<>();
+        interactableItems = new ArrayList<>();
     }
 
     @Override
@@ -83,6 +98,7 @@ public class GamePlay extends PhysicScreen {
         levelItems.add(createLevelItem("models/item/bookItem.gltf", new Vector3(0, 3, 3)));
         levelItems.add(createLevelItem("models/item/bookItem.gltf", new Vector3(0, 3, 4)));
         enemies.add(createLevelEnemy("models/character/brokenminion.gltf", new Vector3(0, 10, -5)));
+        interactableItems.add(createLevelInteractable("models/item/exambook.gltf", new Vector3(5, 3, - 5), InteractableType.FinalExamInteract));
     }
 
     @Override
@@ -94,16 +110,24 @@ public class GamePlay extends PhysicScreen {
             return;
         }
         playerController.update(delta);
-        checkItemCollision(delta);
-
         for (EnemyController enemy: enemies) {
             enemy.update(delta);
         }
+        checkItemCollision(delta);
+        checkInteractable(delta);
+        checkAttack(delta);
+        checkDiedEnemies(delta);
 
         /* UI update */
         stage.act();
         stage.draw();
         bookCountLabel.setText("Book count: " + bookCollected);
+        if(isInExamArea) {
+            isInteractableLabel.setText("exam available: press E to take the final exam!");
+        } else {
+            isInteractableLabel.setText("Not in area");
+        }
+//        isInteractableLabel.setText("area: " + isInExamArea);
     }
 
     @Override
@@ -117,6 +141,7 @@ public class GamePlay extends PhysicScreen {
         stage.dispose();
         playerAsset.dispose();
         levelAsset.dispose();
+        itemAsset.dispose();
     }
 
     private BulletEntity createCharacter(String charModelPath, Vector3 position) {
@@ -179,8 +204,9 @@ public class GamePlay extends PhysicScreen {
     }
 
     private Item createLevelItem(String itemPath, Vector3 position) {
-        levelAsset = new GLTFLoader().load(Gdx.files.internal(itemPath));
-        Scene itemScene = new Scene(levelAsset.scene);
+        if(itemAsset == null)
+            itemAsset = new GLTFLoader().load(Gdx.files.internal(itemPath));
+        Scene itemScene = new Scene(itemAsset.scene);
         ModelInstance itemInstance = itemScene.modelInstance;
 //        sceneInstance.materials.get(0).set(ColorAttribute.createDiffuse(Color.FOREST));
         addSceneToSceneManager(itemScene);
@@ -208,35 +234,116 @@ public class GamePlay extends PhysicScreen {
         body.setAngularFactor(Vector3.Y);
 
         // Prevent the body from sleeping
-        body.setActivationState(Collision.DISABLE_DEACTIVATION);
+//        body.setActivationState(Collision.DISABLE_DEACTIVATION);
 
         bulletPhysicsSystem.addBody(body);
         itemInfo.dispose();
         return new Item(body, itemScene);
     }
+
     private EnemyController createLevelEnemy(String charModelPath, Vector3 position) {
         BulletEntity enemy = createCharacter(charModelPath, position);
         addSceneToSceneManager(enemy.getModelScene());
         return new EnemyController(enemy, bulletPhysicsSystem);
     }
+    private InteractableEntity createLevelInteractable(String itemPath, Vector3 position, InteractableType type) {
+        levelAsset = new GLTFLoader().load(Gdx.files.internal(itemPath));
+        Scene itemScene = new Scene(levelAsset.scene);
+        ModelInstance itemInstance = itemScene.modelInstance;
+        addSceneToSceneManager(itemScene); // Add object to scene manager
 
+        renderInstances.add(itemInstance);
+        itemInstance.transform.setToTranslation(position);
+
+        BoundingBox boundingBox = new BoundingBox();
+        itemInstance.calculateBoundingBox(boundingBox);
+        Vector3 dimensions = new Vector3();
+        boundingBox.getDimensions(dimensions);
+
+        // Scale for half extents
+        dimensions.scl(0.5f);
+        MotionState motionState = new MotionState(itemInstance.transform);
+        btCapsuleShape capsuleShape = new btCapsuleShape(dimensions.len() / 2.5f, dimensions.y);
+
+        float mass = 2f;
+
+        Vector3 intertia = new Vector3();
+        capsuleShape.calculateLocalInertia(mass, intertia);
+        btRigidBody.btRigidBodyConstructionInfo itemInfo = new btRigidBody.btRigidBodyConstructionInfo(0, motionState, capsuleShape, intertia);
+        btRigidBody body = new btRigidBody(itemInfo);
+        // Prevent body from falling over
+        body.setAngularFactor(Vector3.Y);
+
+        bulletPhysicsSystem.addBody(body);
+        itemInfo.dispose();
+        return new InteractableEntity(body, itemScene, type);
+    }
     // check Methods
+    Vector3 tmpV1 = new Vector3();
+    Vector3 tmpV2 = new Vector3();
+
     private void checkItemCollision(float delta) {
         Iterator<Item> itr = levelItems.iterator();
+
+        playerController.getCharacter().getModelInstance().transform.getTranslation(tmpV2);
         while (itr.hasNext()) {
             Item item = itr.next();
             item.update(delta);
-
-            Vector3 tmpV1 = new Vector3();
-            Vector3 tmpV2 = new Vector3();
             item.getModelInstance().transform.getTranslation(tmpV1);
-            playerController.getCharacter().getModelInstance().transform.getTranslation(tmpV2);
             if(tmpV1.dst(tmpV2) <= Item.COLLECT_RADIUS) {
                 removeSceneFromSceneManager(item.getModelScene());
                 bulletPhysicsSystem.removeBody(item.getBody());
                 itr.remove();
                 // Add bookItem here
                 ++bookCollected;
+            }
+        }
+    }
+    private void checkInteractable(float delta) {
+        Iterator<InteractableEntity> itr = interactableItems.iterator();
+        isInExamArea = false;
+
+        playerController.getCharacter().getModelInstance().transform.getTranslation(tmpV2);
+        while (itr.hasNext()) {
+            InteractableEntity item = itr.next();
+            item.update(delta);
+
+
+            item.getModelInstance().transform.getTranslation(tmpV1);
+            if(tmpV1.dst(tmpV2) <= InteractableEntity.INTERACTIVE_RADIUS) {
+                isInExamArea = true;
+            }
+        }
+    }
+
+    private void checkAttack(float delta) {
+        Iterator<EnemyController> itr = enemies.iterator();
+        playerController.getCharacter().getModelInstance().transform.getTranslation(tmpV2);
+        while (itr.hasNext()) {
+            EnemyController enemy = itr.next();
+
+            enemy.getCharacter().getModelInstance().transform.getTranslation(tmpV1);
+            if(tmpV1.dst(tmpV2) <= EnemyController.ATTACK_RADIUS && enemy.isAttacking) {
+                // Enemy force player
+
+            }
+            if(tmpV1.dst(tmpV2) <= DynamicCharacterController.ATTACK_RADIUS && playerController.isAttacking) {
+                enemy.Death();
+                diedEnemies.add(enemy);
+                levelItems.add(createLevelItem("models/item/bookItem.gltf", new Vector3(tmpV1.x, tmpV1.y + 3, tmpV1.z)));
+                itr.remove();
+            }
+        }
+    }
+
+    private void checkDiedEnemies(float delta) {
+        Iterator<EnemyController> itr = diedEnemies.iterator();
+        while (itr.hasNext()) {
+            EnemyController enemy = itr.next();
+            if (enemy.shouldBeDestroy) {
+                removeSceneFromSceneManager(enemy.getCharacter().getModelScene());
+                bulletPhysicsSystem.removeBody(enemy.getCharacter().getBody());
+                itr.remove();
             }
         }
     }
