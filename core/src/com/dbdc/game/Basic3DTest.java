@@ -1,6 +1,6 @@
 package com.dbdc.game;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.dbdc.game.testScreens.BasicCollisionDetection;
 

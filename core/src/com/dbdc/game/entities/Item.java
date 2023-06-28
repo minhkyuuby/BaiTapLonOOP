@@ -2,7 +2,6 @@ package com.dbdc.game.entities;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
-import com.jpcodes.physics.utils.Utils3D;
 import net.mgsx.gltf.scene3d.scene.Scene;
 
 public class Item extends BulletEntity {

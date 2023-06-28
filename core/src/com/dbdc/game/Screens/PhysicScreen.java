@@ -1,18 +1,14 @@
 package com.dbdc.game.Screens;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g3d.*;
-import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
-import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cubemap;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -32,7 +28,7 @@ import net.mgsx.gltf.scene3d.scene.SceneManager;
 import net.mgsx.gltf.scene3d.scene.SceneSkybox;
 import net.mgsx.gltf.scene3d.utils.IBLBuilder;
 
-public class PhysicScreen extends ScreenAdapter {
+public class PhysicScreen implements Screen {
 
     private static boolean drawDebug = false;
 
@@ -114,8 +110,12 @@ public class PhysicScreen extends ScreenAdapter {
     }
 
     @Override
+    public void show() {
+
+    }
+
+    @Override
     public void render(float delta) {
-        super.render(delta);
         if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
             drawDebug = !drawDebug;
         }
@@ -136,6 +136,26 @@ public class PhysicScreen extends ScreenAdapter {
         fpsLabel.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
     }
 
+    @Override
+    public void resize(int width, int height) {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
     protected void addSceneToSceneManager(Scene scene) {
         sceneManager.addScene(scene);
     }
@@ -151,7 +171,6 @@ public class PhysicScreen extends ScreenAdapter {
 
     @Override
     public void dispose() {
-        super.dispose();
         sceneManager.dispose();
         stage.dispose();
         skybox.dispose();

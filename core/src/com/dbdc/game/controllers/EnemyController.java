@@ -1,17 +1,14 @@
 package com.dbdc.game.controllers;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.ClosestNotMeRayResultCallback;
-import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.dbdc.game.entities.BulletEntity;
 import com.jpcodes.physics.BulletPhysicsSystem;
 
 public class EnemyController implements AnimationController.AnimationListener {
     public static float ATTACK_RADIUS = 2f;
     private final float MOVE_SPEED = 28f;
+    private final float ATTACK_DELAY = 5f;
 
     private final Vector3 position = new Vector3();
     private final Vector3 normal = new Vector3();
@@ -26,6 +23,7 @@ public class EnemyController implements AnimationController.AnimationListener {
     private final BulletPhysicsSystem physicsSystem;
 
     public boolean isDefeated, isAttacking, shouldBeDestroy;
+    private float atkCountdown;
 
     public BulletEntity getCharacter() {
         return character;
@@ -39,10 +37,15 @@ public class EnemyController implements AnimationController.AnimationListener {
         isDefeated = false;
         isAttacking = false;
         shouldBeDestroy = false;
+        atkCountdown = ATTACK_DELAY;
     }
 
     public void update(float delta) {
-
+        atkCountdown-=delta;
+        if (atkCountdown <= 0) {
+            atkCountdown = ATTACK_DELAY;
+            Attack();
+        }
     }
 
     private void resetVelocity() {

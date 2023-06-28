@@ -1,7 +1,6 @@
 package com.dbdc.game.Screens;
 
 import com.badlogic.gdx.Gdx;
-
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -92,9 +91,11 @@ public class MainMenu implements Screen {
         options = new Options(game);
         aboutUs = new AboutUs(game);
 
+//        MainMenu menu = this;
         ngButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                dispose();
                 game.audioManager.playSoundEffect(AudioManager.click);
                 game.setScreen(new GamePlay(game));
             };

@@ -2,7 +2,7 @@ package com.dbdc.game.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -15,7 +15,6 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.dbdc.game.GameClass;
 import com.dbdc.game.controllers.DynamicCharacterController;
@@ -96,7 +95,7 @@ public class GamePlay extends PhysicScreen {
         // Load a walkable area
         createLevel("models/level.gltf", "models/level/level.obj");
         levelItems.add(createLevelItem("models/item/bookItem.gltf", new Vector3(0, 3, 3)));
-        levelItems.add(createLevelItem("models/item/bookItem.gltf", new Vector3(0, 3, 4)));
+//        levelItems.add(createLevelItem("models/item/bookItem.gltf", new Vector3(0, 3, 4)));
         enemies.add(createLevelEnemy("models/character/brokenminion.gltf", new Vector3(0, 10, -5)));
         interactableItems.add(createLevelInteractable("models/item/exambook.gltf", new Vector3(5, 3, - 5), InteractableType.FinalExamInteract));
     }
@@ -105,8 +104,8 @@ public class GamePlay extends PhysicScreen {
     public void render(float delta) {
         super.render(delta);
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+//            this.dispose();
             game.setScreen(new MainMenu(game));
-            this.hide();
             return;
         }
         playerController.update(delta);
@@ -330,7 +329,7 @@ public class GamePlay extends PhysicScreen {
             if(tmpV1.dst(tmpV2) <= DynamicCharacterController.ATTACK_RADIUS && playerController.isAttacking) {
                 enemy.Death();
                 diedEnemies.add(enemy);
-                levelItems.add(createLevelItem("models/item/bookItem.gltf", new Vector3(tmpV1.x, tmpV1.y + 3, tmpV1.z)));
+//                levelItems.add(createLevelItem("models/item/bookItem.gltf", new Vector3(tmpV1.x, tmpV1.y + 3, tmpV1.z)));
                 itr.remove();
             }
         }

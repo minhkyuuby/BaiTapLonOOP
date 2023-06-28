@@ -1,12 +1,12 @@
 package com.dbdc.game.controllers;
 
-import com.dbdc.game.entities.BulletEntity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.ClosestNotMeRayResultCallback;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.dbdc.game.entities.BulletEntity;
 import com.jpcodes.physics.BulletPhysicsSystem;
 import com.jpcodes.physics.utils.Utils3D;
 
