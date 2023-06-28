@@ -20,7 +20,7 @@ public class EnemyController implements AnimationController.AnimationListener {
     private final BulletEntity character;
 
     private AnimationController animationController;
-    private final BulletPhysicsSystem physicsSystem;
+//    private final BulletPhysicsSystem physicsSystem;
 
     public boolean isDefeated, isAttacking, shouldBeDestroy;
     private float atkCountdown;
@@ -29,9 +29,9 @@ public class EnemyController implements AnimationController.AnimationListener {
         return character;
     }
 
-    public EnemyController(BulletEntity entity, BulletPhysicsSystem bulletPhysicsSystem) {
+    public EnemyController(BulletEntity entity) {
         character = entity;
-        physicsSystem = bulletPhysicsSystem;
+//        physicsSystem = bulletPhysicsSystem;
         animationController = character.getAnimationController();
         animationController.setAnimation("Run", -1);
         isDefeated = false;

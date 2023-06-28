@@ -1,6 +1,7 @@
 package com.dbdc.game.Screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -23,6 +24,7 @@ public class MainMenu implements Screen {
     private TextureAtlas atlas;
     private Skin skin;
     private LevelSelecting levelSelecting = new LevelSelecting(game);
+    private GamePlay gamePlay;
     private Options options = new Options(game);
     private AboutUs aboutUs = new AboutUs(game);
     private Button ngButton, levelButton, optionsButton, exitButton, auButton;
@@ -31,6 +33,7 @@ public class MainMenu implements Screen {
 
     public MainMenu(final GameClass game) {
         this.game = game;
+        gamePlay = new GamePlay(game, this);
     }
 
     @Override
@@ -95,9 +98,9 @@ public class MainMenu implements Screen {
         ngButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                dispose();
+//                dispose();
                 game.audioManager.playSoundEffect(AudioManager.click);
-                game.setScreen(new GamePlay(game));
+                game.setScreen(gamePlay);
             };
         });
         levelButton.addListener(new ClickListener() {
@@ -151,6 +154,11 @@ public class MainMenu implements Screen {
 
     @Override
     public void render(float delta) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+            game.audioManager.playSoundEffect(AudioManager.click);
+            game.setScreen(gamePlay);
+            return;
+        }
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 

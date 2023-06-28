@@ -58,9 +58,11 @@ public class GamePlay extends PhysicScreen {
     private List<EnemyController> enemies;
     private List<EnemyController> diedEnemies;
     private List<InteractableEntity> interactableItems;
+    private MainMenu menuScreen;
 
-    public GamePlay(GameClass game) {
+    public GamePlay(GameClass game, MainMenu menu) {
         super(game);
+        menuScreen = menu;
         BulletEntity player = createCharacter("models/character/dogwithpencilandsuitcase.gltf", new Vector3(0, 10, 5));
 
         playerController = new DynamicCharacterController(player, bulletPhysicsSystem);
@@ -102,12 +104,13 @@ public class GamePlay extends PhysicScreen {
 
     @Override
     public void render(float delta) {
-        super.render(delta);
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
 //            this.dispose();
-            game.setScreen(new MainMenu(game));
+//            playerController.EndControl();
+            game.setScreen(menuScreen);
             return;
         }
+        super.render(delta);
         playerController.update(delta);
         for (EnemyController enemy: enemies) {
             enemy.update(delta);
@@ -138,9 +141,12 @@ public class GamePlay extends PhysicScreen {
     public void dispose() {
         super.dispose();
         stage.dispose();
-        playerAsset.dispose();
-        levelAsset.dispose();
-        itemAsset.dispose();
+        if (playerAsset != null)
+            playerAsset.dispose();
+        if (levelAsset != null)
+            levelAsset.dispose();
+        if (itemAsset != null)
+            itemAsset.dispose();
     }
 
     private BulletEntity createCharacter(String charModelPath, Vector3 position) {
@@ -243,7 +249,7 @@ public class GamePlay extends PhysicScreen {
     private EnemyController createLevelEnemy(String charModelPath, Vector3 position) {
         BulletEntity enemy = createCharacter(charModelPath, position);
         addSceneToSceneManager(enemy.getModelScene());
-        return new EnemyController(enemy, bulletPhysicsSystem);
+        return new EnemyController(enemy);
     }
     private InteractableEntity createLevelInteractable(String itemPath, Vector3 position, InteractableType type) {
         levelAsset = new GLTFLoader().load(Gdx.files.internal(itemPath));

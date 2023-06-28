@@ -28,8 +28,10 @@ public class DynamicCharacterController implements AnimationController.Animation
     private final BulletEntity character;
 
     private AnimationController animationController;
-    private final BulletPhysicsSystem physicsSystem;
+    private BulletPhysicsSystem physicsSystem;
     private final ClosestNotMeRayResultCallback callback;
+
+    private boolean endControl;
 
     public BulletEntity getCharacter() {
         return character;
@@ -41,9 +43,11 @@ public class DynamicCharacterController implements AnimationController.Animation
         callback = new ClosestNotMeRayResultCallback(character.getBody());
         animationController = character.getAnimationController();
         animationController.setAnimation("Idle", -1);
+        endControl = false;
     }
 
     public void update(float delta) {
+        if (endControl) return;
         Utils3D.getDirection(character.getModelInstance().transform, currentDirection);
         btRigidBody body = character.getBody();
         resetVelocity();
@@ -105,6 +109,7 @@ public class DynamicCharacterController implements AnimationController.Animation
      * @return
      */
     private boolean isGrounded() {
+        if (endControl) return false;
         // Reset out callback
         callback.setClosestHitFraction(1.0f);
         callback.setCollisionObject(null);
@@ -122,6 +127,12 @@ public class DynamicCharacterController implements AnimationController.Animation
     private void resetVelocity() {
         angularVelocity.set(0,0,0);
         linearVelocity.set(0,0,0);
+    }
+
+    public void EndControl() {
+        endControl = true;
+        callback.dispose();
+        physicsSystem = null;
     }
 
     @Override
