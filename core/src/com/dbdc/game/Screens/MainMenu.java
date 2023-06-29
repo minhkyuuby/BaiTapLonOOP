@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.dbdc.game.GameClass;
+import com.dbdc.game.GameScreen;
 import com.dbdc.game.manager.Assets;
 import com.dbdc.game.manager.AudioManager;
 
@@ -23,17 +24,12 @@ public class MainMenu implements Screen {
     private Stage stage;
     private TextureAtlas atlas;
     private Skin skin;
-    private LevelSelecting levelSelecting = new LevelSelecting(game);
-    private GamePlay gamePlay;
-    private Options options = new Options(game);
-    private AboutUs aboutUs = new AboutUs(game);
     private Button ngButton, levelButton, optionsButton, exitButton, auButton;
     private Table table;
     private Texture bgTexture = new Texture(Assets.bg);
 
     public MainMenu(final GameClass game) {
         this.game = game;
-        gamePlay = new GamePlay(game, this);
     }
 
     @Override
@@ -90,17 +86,12 @@ public class MainMenu implements Screen {
         table.setPosition(0,-80);
         table.align(Align.center);
 
-        levelSelecting = new LevelSelecting(game);
-        options = new Options(game);
-        aboutUs = new AboutUs(game);
-
 //        MainMenu menu = this;
         ngButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-//                dispose();
                 game.audioManager.playSoundEffect(AudioManager.click);
-                game.setScreen(gamePlay);
+                game.setScreen(game.getScreen(GameScreen.GamePlay));
             };
         });
         levelButton.addListener(new ClickListener() {
@@ -112,7 +103,7 @@ public class MainMenu implements Screen {
                         Actions.run(new Runnable() {
                             @Override
                             public void run() {
-                                game.setScreen(levelSelecting);
+                                game.setScreen(game.getScreen(GameScreen.Levels));
                             }
                         })
                 ));
@@ -122,7 +113,7 @@ public class MainMenu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.audioManager.playSoundEffect(AudioManager.click);
-                game.setScreen(options);
+//                game.setScreen(options);
             };
         });
         exitButton.addListener(new ClickListener() {
@@ -141,7 +132,7 @@ public class MainMenu implements Screen {
                         Actions.run(new Runnable() {
                             @Override
                             public void run() {
-                                game.setScreen(aboutUs);
+                                game.setScreen(game.getScreen(GameScreen.AboutUs));
                             }
                         })
                 ));
@@ -154,11 +145,6 @@ public class MainMenu implements Screen {
 
     @Override
     public void render(float delta) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
-            game.audioManager.playSoundEffect(AudioManager.click);
-            game.setScreen(gamePlay);
-            return;
-        }
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -184,6 +170,7 @@ public class MainMenu implements Screen {
     @Override
     public void hide() {
         game.audioManager.stopBackgroundMusic();
+//        dispose();
     }
 
     @Override
