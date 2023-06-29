@@ -3,6 +3,7 @@ package com.dbdc.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.bullet.Bullet;
+import com.dbdc.game.Screens.GameOver;
 import com.dbdc.game.Screens.MainMenu;
 import com.dbdc.game.manager.AudioManager;
 import com.kotcrab.vis.ui.VisUI;

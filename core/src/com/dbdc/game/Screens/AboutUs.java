@@ -1,12 +1,13 @@
 package com.dbdc.game.Screens;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -16,12 +17,15 @@ import com.dbdc.game.GameClass;
 import com.dbdc.game.manager.Assets;
 import com.dbdc.game.manager.AudioManager;
 
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
+
 public class AboutUs implements Screen {
     GameClass game;
     private Stage stage;
     private TextureAtlas atlas;
     private Skin skin;
     private Texture auscreenTexture = new Texture(Assets.auscreen);
+    private Image auImage;
     private Button backButton;
 
     public AboutUs(final GameClass game) {
@@ -35,9 +39,10 @@ public class AboutUs implements Screen {
         skin = new Skin(atlas);
         final MainMenu menu = new MainMenu(game);
 
-        Image auImage = new Image(auscreenTexture);
+        auImage = new Image(auscreenTexture);
 
-        stage.addAction(Actions.sequence(Actions.alpha(0,0f),Actions.fadeIn(0.3f)));
+        stage.getRoot().getColor().a = 0;
+        stage.getRoot().addAction(fadeIn(0.5f));
 
         ImageButton.ImageButtonStyle backStyle = new ImageButton.ImageButtonStyle();
         backStyle.up = skin.getDrawable("back_up");
@@ -53,19 +58,24 @@ public class AboutUs implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.audioManager.playSoundEffect(AudioManager.click);
-                stage.addAction(Actions.sequence(
-                        Actions.fadeOut(0.3f),
-                        Actions.run(new Runnable() {
-                            @Override
-                            public void run() {
-                                game.setScreen(menu);
-                            }
-                        })
-                ));
+                switchScreen(game,menu);
             }
         });
 
         Gdx.input.setInputProcessor(stage);
+    }
+
+    public void switchScreen(final Game game, final Screen newScreen){
+        stage.getRoot().getColor().a = 1;
+        SequenceAction sequenceAction = new SequenceAction();
+        sequenceAction.addAction(fadeOut(0.5f));
+        sequenceAction.addAction(run(new Runnable() {
+            @Override
+            public void run() {
+                game.setScreen(newScreen);
+            }
+        }));
+        stage.getRoot().addAction(sequenceAction);
     }
     @Override
     public void render(float delta) {

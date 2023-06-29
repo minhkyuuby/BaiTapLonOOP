@@ -1,0 +1,34 @@
+
+gameoverskin.png
+size: 2048, 128
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+menu_down
+  rotate: false
+  xy: 971, 2
+  size: 321, 80
+  orig: 321, 80
+  offset: 0, 0
+  index: -1
+menu_up
+  rotate: false
+  xy: 648, 2
+  size: 321, 80
+  orig: 321, 80
+  offset: 0, 0
+  index: -1
+playagain_down
+  rotate: false
+  xy: 325, 2
+  size: 321, 80
+  orig: 321, 80
+  offset: 0, 0
+  index: -1
+playagain_up
+  rotate: false
+  xy: 2, 2
+  size: 321, 80
+  orig: 321, 80
+  offset: 0, 0
+  index: -1

@@ -1,5 +1,6 @@
 package com.dbdc.game.Screens;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 
 import com.badlogic.gdx.Screen;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
@@ -17,15 +19,15 @@ import com.dbdc.game.GameClass;
 import com.dbdc.game.manager.Assets;
 import com.dbdc.game.manager.AudioManager;
 
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.run;
+
 
 public class MainMenu implements Screen {
     protected GameClass game;
     private Stage stage;
     private TextureAtlas atlas;
     private Skin skin;
-    private LevelSelecting levelSelecting = new LevelSelecting(game);
-    private Options options = new Options(game);
-    private AboutUs aboutUs = new AboutUs(game);
     private Button ngButton, levelButton, optionsButton, exitButton, auButton;
     private Table table;
     private Texture bgTexture = new Texture(Assets.bg);
@@ -88,37 +90,25 @@ public class MainMenu implements Screen {
         table.setPosition(0,-80);
         table.align(Align.center);
 
-        levelSelecting = new LevelSelecting(game);
-        options = new Options(game);
-        aboutUs = new AboutUs(game);
-
         ngButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.audioManager.playSoundEffect(AudioManager.click);
-                game.setScreen(new GamePlay(game));
+                switchScreen(game,new GamePlay(game));
             };
         });
         levelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.audioManager.playSoundEffect(AudioManager.click);
-                stage.addAction(Actions.sequence(
-                        Actions.fadeOut(0.3f),
-                        Actions.run(new Runnable() {
-                            @Override
-                            public void run() {
-                                game.setScreen(levelSelecting);
-                            }
-                        })
-                ));
+                switchScreen(game,new LevelSelecting(game));
             }
         });
         optionsButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.audioManager.playSoundEffect(AudioManager.click);
-                game.setScreen(options);
+                switchScreen(game,new Options(game));
             };
         });
         exitButton.addListener(new ClickListener() {
@@ -132,20 +122,25 @@ public class MainMenu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.audioManager.playSoundEffect(AudioManager.click);
-                stage.addAction(Actions.sequence(
-                        Actions.fadeOut(0.3f),
-                        Actions.run(new Runnable() {
-                            @Override
-                            public void run() {
-                                game.setScreen(aboutUs);
-                            }
-                        })
-                ));
+                switchScreen(game,new AboutUs(game));
             }
         });
 
         stage.addActor(table);
         Gdx.input.setInputProcessor(stage);
+    }
+
+    public void switchScreen(final Game game, final Screen newScreen){
+        stage.getRoot().getColor().a = 1;
+        SequenceAction sequenceAction = new SequenceAction();
+        sequenceAction.addAction(fadeOut(0.5f));
+        sequenceAction.addAction(run(new Runnable() {
+            @Override
+            public void run() {
+                game.setScreen(newScreen);
+            }
+        }));
+        stage.getRoot().addAction(sequenceAction);
     }
 
     @Override
