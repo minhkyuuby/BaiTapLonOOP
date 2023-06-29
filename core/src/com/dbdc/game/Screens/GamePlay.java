@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.Bullet;
@@ -64,10 +65,8 @@ public class GamePlay extends PhysicScreen {
         super(game);
         menuScreen = menu;
         BulletEntity player = createCharacter("models/character/dogwithpencilandsuitcase.gltf", new Vector3(0, 10, 5));
-
         playerController = new DynamicCharacterController(player, bulletPhysicsSystem);
         setCameraController(new ThirdPersonCameraController(camera, playerScene.modelInstance));
-
         addSceneToSceneManager(playerScene);
         camera.position.set(new Vector3(0, 10, -10));
         camera.lookAt(Vector3.Zero);
@@ -100,6 +99,11 @@ public class GamePlay extends PhysicScreen {
 //        levelItems.add(createLevelItem("models/item/bookItem.gltf", new Vector3(0, 3, 4)));
         enemies.add(createLevelEnemy("models/character/brokenminion.gltf", new Vector3(0, 10, -5)));
         interactableItems.add(createLevelInteractable("models/item/exambook.gltf", new Vector3(5, 3, - 5), InteractableType.FinalExamInteract));
+
+        /* Setup player Position */
+        Matrix4 transform = new Matrix4();
+        transform.setTranslation(0, 3, 0);
+        playerController.getCharacter().getBody().setWorldTransform(transform);
     }
 
     @Override
@@ -108,6 +112,7 @@ public class GamePlay extends PhysicScreen {
 //            this.dispose();
 //            playerController.EndControl();
             game.setScreen(menuScreen);
+            ClearScreen();
             return;
         }
         super.render(delta);
@@ -328,14 +333,16 @@ public class GamePlay extends PhysicScreen {
             EnemyController enemy = itr.next();
 
             enemy.getCharacter().getModelInstance().transform.getTranslation(tmpV1);
-            if(tmpV1.dst(tmpV2) <= EnemyController.ATTACK_RADIUS && enemy.isAttacking) {
+            if(tmpV1.dst(tmpV2) <= EnemyController.ATTACK_RADIUS && enemy.isAttacking && !playerController.isInvincible) {
                 // Enemy force player
-
+                playerController.GetHit();
+                System.out.println("Attack Player!!");
+                playerController.getCharacter().getBody().applyCentralForce(tmpV2.sub(tmpV1).scl(2));
             }
             if(tmpV1.dst(tmpV2) <= DynamicCharacterController.ATTACK_RADIUS && playerController.isAttacking) {
                 enemy.Death();
                 diedEnemies.add(enemy);
-//                levelItems.add(createLevelItem("models/item/bookItem.gltf", new Vector3(tmpV1.x, tmpV1.y + 3, tmpV1.z)));
+                levelItems.add(createLevelItem("models/item/bookItem.gltf", new Vector3(tmpV1.x, tmpV1.y + 3, tmpV1.z)));
                 itr.remove();
             }
         }
@@ -351,5 +358,32 @@ public class GamePlay extends PhysicScreen {
                 itr.remove();
             }
         }
+    }
+
+    /* ClEAR SCREE */
+    private void ClearScreen() {
+        playerController.getCharacter().getBody().clearForces();
+        playerController.getCharacter().getBody().setLinearVelocity(Vector3.Zero);
+//        playerController.getCharacter().getBody().setLinearFactor(Vector3.Zero);
+//        playerController.getCharacter().getBody()
+        for (Item item: levelItems) {
+            removeSceneFromSceneManager(item.getModelScene());
+            bulletPhysicsSystem.removeBody(item.getBody());
+        }
+        levelItems.clear();
+        for (InteractableEntity item: interactableItems) {
+            removeSceneFromSceneManager(item.getModelScene());
+            bulletPhysicsSystem.removeBody(item.getBody());
+        }
+        interactableItems.clear();
+        for (EnemyController enemy : enemies) {
+            removeSceneFromSceneManager(enemy.getCharacter().getModelScene());
+            bulletPhysicsSystem.removeBody(enemy.getCharacter().getBody());
+        }
+        enemies.clear();
+
+
+        bookCollected = 0;
+        isInExamArea = false;
     }
 }
