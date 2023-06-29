@@ -2,15 +2,22 @@ package com.dbdc.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.physics.bullet.Bullet;
+import com.dbdc.game.Screens.AboutUs;
+import com.dbdc.game.Screens.GamePlay;
+import com.dbdc.game.Screens.LevelSelecting;
 import com.dbdc.game.Screens.MainMenu;
 import com.dbdc.game.manager.AudioManager;
 import com.kotcrab.vis.ui.VisUI;
+import net.mgsx.gltf.scene3d.scene.Scene;
 
 public class GameClass extends Game {
 	public static int HEIGHT;
 	public static int WIDTH;
 	public AudioManager audioManager;
+
+	public Screen[] gameScreens;
 	@Override
 	public void create () {
 		Bullet.init();
@@ -19,7 +26,13 @@ public class GameClass extends Game {
 		WIDTH = Gdx.graphics.getWidth();
 		HEIGHT = Gdx.graphics.getHeight();
 		audioManager = new AudioManager();
-		this.setScreen(new MainMenu(this));
+		gameScreens = new Screen[5];
+		gameScreens[GameScreen.MainMenu.ordinal()] = new MainMenu(this);
+		gameScreens[GameScreen.Levels.ordinal()] = new LevelSelecting(this);
+		gameScreens[GameScreen.GamePlay.ordinal()] = new GamePlay(this);
+		gameScreens[GameScreen.AboutUs.ordinal()] = new AboutUs(this);
+
+		this.setScreen(getScreen(GameScreen.MainMenu));
 	}
 
 	@Override
@@ -29,5 +42,9 @@ public class GameClass extends Game {
 
 	public void dispose() {
 		audioManager.dispose();
+	}
+
+	public Screen getScreen(GameScreen screen) {
+		return gameScreens[screen.ordinal()];
 	}
 }

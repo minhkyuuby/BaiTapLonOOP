@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.dbdc.game.GameClass;
+import com.dbdc.game.GameScreen;
 import com.dbdc.game.manager.Assets;
 import com.dbdc.game.manager.AudioManager;
 
@@ -38,7 +39,6 @@ public class LevelSelecting implements Screen {
         stage = new Stage();
         atlas = new TextureAtlas("screen/levelskin.pack");
         skin = new Skin(atlas);
-        final MainMenu menu = new MainMenu(game);
 
         Image levelImage = new Image(levelbgTexture);
 
@@ -125,7 +125,7 @@ public class LevelSelecting implements Screen {
                         Actions.run(new Runnable() {
                             @Override
                             public void run() {
-                                game.setScreen(menu);
+                                game.setScreen(game.getScreen(GameScreen.MainMenu));
                             }
                         })
                 ));

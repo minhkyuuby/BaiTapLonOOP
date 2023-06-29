@@ -7,14 +7,29 @@ import com.badlogic.gdx.audio.Sound;
 public class AudioManager {
     private static final float DEFAULT_VOLUME = 1.0f;
     private Music backgroundMusic;
+    private Music gameplayMusic;
     private Sound soundEffect;
     public static Sound click;
 
     public AudioManager() {
         // Initialize your audio resources here
-        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("music/mp3/Ambient 1.mp3"));
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("music/mp3/Nujabes.mp3"));
+        gameplayMusic = Gdx.audio.newMusic(Gdx.files.internal("music/mp3/8 Bit Space Groove.mp3"));
         soundEffect = Gdx.audio.newSound(Gdx.files.internal("music/mp3/Death.mp3"));
         click = Gdx.audio.newSound(Gdx.files.internal("music/mp3/click.wav"));
+    }
+
+    public void playGameplayMusic() {
+        if (!gameplayMusic.isPlaying()) {
+            gameplayMusic.setLooping(true);
+            gameplayMusic.setVolume(DEFAULT_VOLUME);
+            gameplayMusic.play();
+        }
+    }
+    public void stopGameplayMusic() {
+        if (gameplayMusic.isPlaying()) {
+            gameplayMusic.stop();
+        }
     }
 
     public void playBackgroundMusic() {

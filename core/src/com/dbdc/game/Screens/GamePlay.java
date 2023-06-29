@@ -3,6 +3,9 @@ package com.dbdc.game.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -14,16 +17,23 @@ import com.badlogic.gdx.physics.bullet.collision.Collision;
 import com.badlogic.gdx.physics.bullet.collision.btCapsuleShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.dbdc.game.GameClass;
+import com.dbdc.game.GameScreen;
 import com.dbdc.game.controllers.DynamicCharacterController;
 import com.dbdc.game.controllers.EnemyController;
 import com.dbdc.game.entities.BulletEntity;
 import com.dbdc.game.entities.InteractableEntity;
 import com.dbdc.game.entities.InteractableType;
 import com.dbdc.game.entities.Item;
+import com.dbdc.game.manager.AudioManager;
 import com.jpcodes.physics.MotionState;
 import com.jpcodes.physics.controllers.camera.ThirdPersonCameraController;
 import com.jpcodes.physics.utils.Utils3D;
@@ -47,10 +57,11 @@ public class GamePlay extends PhysicScreen {
 
 
     // UI components
-    private final Stage stage;
-    private final VisLabel bookCountLabel;
-
-    private final VisLabel isInteractableLabel;
+    private Stage stage;
+    private Skin skin;
+    private VisLabel bookCountLabel;
+    private Table table;
+    private VisLabel isInteractableLabel;
 
     // Gameplay params
     int bookCollected;
@@ -59,11 +70,11 @@ public class GamePlay extends PhysicScreen {
     private List<EnemyController> enemies;
     private List<EnemyController> diedEnemies;
     private List<InteractableEntity> interactableItems;
-    private MainMenu menuScreen;
+//    private MainMenu menuScreen;
 
-    public GamePlay(GameClass game, MainMenu menu) {
+    public GamePlay(GameClass game) {
         super(game);
-        menuScreen = menu;
+//        menuScreen = menu;
         BulletEntity player = createCharacter("models/character/dogwithpencilandsuitcase.gltf", new Vector3(0, 10, 5));
         playerController = new DynamicCharacterController(player, bulletPhysicsSystem);
         setCameraController(new ThirdPersonCameraController(camera, playerScene.modelInstance));
@@ -71,6 +82,39 @@ public class GamePlay extends PhysicScreen {
         camera.position.set(new Vector3(0, 10, -10));
         camera.lookAt(Vector3.Zero);
 
+        /*  gameplay setup *///
+        bookCollected = 0;
+        isInExamArea = false;
+        levelItems = new ArrayList<>();
+        enemies = new ArrayList<>();
+        diedEnemies = new ArrayList<>();
+        interactableItems = new ArrayList<>();
+
+        skin = new Skin();
+
+        // Generate a 1x1 white texture and store it in the skin named "white".
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.WHITE);
+        pixmap.fill();
+        skin.add("white", new Texture(pixmap));
+
+        // Store the default libGDX font under the name "default".
+        skin.add("default", new BitmapFont());
+
+        // Configure a TextButtonStyle and name it "default". Skin resources are stored by type, so this doesn't overwrite the font.
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        textButtonStyle.up = skin.newDrawable("white", Color.DARK_GRAY);
+        textButtonStyle.down = skin.newDrawable("white", Color.DARK_GRAY);
+        textButtonStyle.checked = skin.newDrawable("white", Color.BLUE);
+        textButtonStyle.over = skin.newDrawable("white", Color.LIGHT_GRAY);
+        textButtonStyle.font = skin.getFont("default");
+        skin.add("default", textButtonStyle);
+    }
+
+    @Override
+    public void show() {
+        super.show();
+        game.audioManager.playGameplayMusic();
         /*   UI setup *///
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         bookCountLabel = new VisLabel();
@@ -80,23 +124,13 @@ public class GamePlay extends PhysicScreen {
         isInteractableLabel.setPosition(Gdx.graphics.getWidth(),Gdx.graphics.getHeight() -10);
         isInteractableLabel.setAlignment(isInteractableLabel.getLabelAlign(), Align.right);
         stage.addActor(isInteractableLabel);
+        table = new Table();
+        stage.addActor(table);
+        Gdx.input.setInputProcessor(stage);
 
-        /*  gameplay setup *///
-        bookCollected = 0;
-        isInExamArea = false;
-        levelItems = new ArrayList<>();
-        enemies = new ArrayList<>();
-        diedEnemies = new ArrayList<>();
-        interactableItems = new ArrayList<>();
-    }
-
-    @Override
-    public void show() {
-        super.show();
         // Load a walkable area
         createLevel("models/level.gltf", "models/level/level.obj");
         levelItems.add(createLevelItem("models/item/bookItem.gltf", new Vector3(0, 3, 3)));
-//        levelItems.add(createLevelItem("models/item/bookItem.gltf", new Vector3(0, 3, 4)));
         enemies.add(createLevelEnemy("models/character/brokenminion.gltf", new Vector3(0, 10, -5)));
         interactableItems.add(createLevelInteractable("models/item/exambook.gltf", new Vector3(5, 3, - 5), InteractableType.FinalExamInteract));
 
@@ -109,9 +143,7 @@ public class GamePlay extends PhysicScreen {
     @Override
     public void render(float delta) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-//            this.dispose();
-//            playerController.EndControl();
-            game.setScreen(menuScreen);
+            game.setScreen(game.getScreen(GameScreen.MainMenu));
             ClearScreen();
             return;
         }
@@ -120,6 +152,11 @@ public class GamePlay extends PhysicScreen {
         for (EnemyController enemy: enemies) {
             enemy.update(delta);
         }
+        if(playerController.examTaked && playerController.isExamDone) {
+            playerController.resetExamStat();
+            InteractWithExam();
+        }
+
         checkItemCollision(delta);
         checkInteractable(delta);
         checkAttack(delta);
@@ -131,15 +168,19 @@ public class GamePlay extends PhysicScreen {
         bookCountLabel.setText("Book count: " + bookCollected);
         if(isInExamArea) {
             isInteractableLabel.setText("exam available: press E to take the final exam!");
+            if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+                InteractWithExam();
+            }
         } else {
             isInteractableLabel.setText("Not in area");
         }
-//        isInteractableLabel.setText("area: " + isInExamArea);
+//        isInteractableLabel.setText("isInvincible: " + playerController.isInvincible);
     }
 
     @Override
     public void hide() {
         super.hide();
+        game.audioManager.stopGameplayMusic();
     }
 
     @Override
@@ -336,8 +377,8 @@ public class GamePlay extends PhysicScreen {
             if(tmpV1.dst(tmpV2) <= EnemyController.ATTACK_RADIUS && enemy.isAttacking && !playerController.isInvincible) {
                 // Enemy force player
                 playerController.GetHit();
-                System.out.println("Attack Player!!");
-                playerController.getCharacter().getBody().applyCentralForce(tmpV2.sub(tmpV1).scl(2));
+//                System.out.println("Attack Player!!");
+                playerController.getCharacter().getBody().applyCentralImpulse(tmpV2.sub(tmpV1).scl(13f));
             }
             if(tmpV1.dst(tmpV2) <= DynamicCharacterController.ATTACK_RADIUS && playerController.isAttacking) {
                 enemy.Death();
@@ -360,8 +401,51 @@ public class GamePlay extends PhysicScreen {
         }
     }
 
-    /* ClEAR SCREE */
+    /* Gameplay Decision */
+    private void InteractWithExam() {
+        table.reset();
+        table.setFillParent(true);
+        table.defaults().pad(0f);
+        table.pack();
+
+        table.row();
+        TextButton acceptBtn = new TextButton("Take the Exam", skin);
+        table.add(acceptBtn);
+        table.row();
+        TextButton declineBtn = new TextButton("Decline", skin);
+        table.add(declineBtn);
+        table.setPosition(0,-80);
+        table.align(Align.center);
+
+        acceptBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                AcceptExam();
+            };
+        });
+        declineBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                DeclineExam();
+            };
+        });
+
+        playerController.DisableControl();
+    }
+
+    private void AcceptExam() {
+        playerController.TakeExam();
+        table.reset();
+    }
+
+    private void DeclineExam() {
+        table.reset();
+        playerController.EnableControl();
+    }
+
+    /* ClEAR SCREEN */
     private void ClearScreen() {
+//        dispose();
         playerController.getCharacter().getBody().clearForces();
         playerController.getCharacter().getBody().setLinearVelocity(Vector3.Zero);
 //        playerController.getCharacter().getBody().setLinearFactor(Vector3.Zero);

@@ -16,7 +16,7 @@ public class DynamicCharacterController implements AnimationController.Animation
     private final float MOVE_SPEED = 28f;
     private final float JUMP_FACTOR = 15f;
 
-    public boolean isAttacking = false, isInvincible = false;
+    public boolean isAttacking = false, isInvincible = false, examTaked = false, isExamDone = false;
 
     private final Vector3 position = new Vector3();
     private final Vector3 normal = new Vector3();
@@ -129,26 +129,42 @@ public class DynamicCharacterController implements AnimationController.Animation
         linearVelocity.set(0,0,0);
     }
 
-    public void EndControl() {
+    public void DisableControl() {
         endControl = true;
-        callback.dispose();
-        physicsSystem = null;
+    }
+
+    public void EnableControl() {
+        endControl = false;
     }
 
     public void GetHit() {
-        animationController.animate("Defeat", 1, 1f, this, 0.25f);
+        animationController.action("Defeat", 1, 0.6f, this, 0f);
         isInvincible = true;
+    }
+
+    public void TakeExam() {
+        examTaked = true;
+        animationController.action("Interact", 1, 1, this, 0f);
+    }
+
+    public void resetExamStat() {
+        isExamDone = false;
+        examTaked = false;
     }
 
     @Override
     public void onEnd(AnimationController.AnimationDesc animation) {
         if(animation.animation.id.equals("AttackSpinning")) {
-//            System.out.println("Attacked!");
             isAttacking = false;
         }
         if(animation.animation.id.equals("Defeat")) {
-//            System.out.println("Attacked!");
             isInvincible = false;
+        }
+        if(animation.animation.id.equals("AttackSpinning")) {
+            isAttacking = false;
+        }
+        if(animation.animation.id.equals("Interact")) {
+            isExamDone = true;
         }
     }
 
