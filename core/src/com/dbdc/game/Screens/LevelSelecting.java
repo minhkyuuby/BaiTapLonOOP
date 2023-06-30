@@ -30,12 +30,15 @@ public class LevelSelecting implements Screen {
     private Button vlButton;
     private Button backButton;
 
+    private GamePlay gamePlay;
+
     public LevelSelecting(GameClass game) {
         this.game = game;
     }
 
     @Override
     public void show() {
+        gamePlay = (GamePlay) game.getScreen(GameScreen.GamePlay);
         stage = new Stage();
         atlas = new TextureAtlas("screen/levelskin.pack");
         skin = new Skin(atlas);
@@ -85,6 +88,8 @@ public class LevelSelecting implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.audioManager.playSoundEffect(AudioManager.click);
+                gamePlay.setLevel(GamePlayLevel.GiaiTich1);
+                game.setScreen(gamePlay);
             }
         });
 
@@ -92,6 +97,8 @@ public class LevelSelecting implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.audioManager.playSoundEffect(AudioManager.click);
+                gamePlay.setLevel(GamePlayLevel.GiaiTich2);
+                game.setScreen(gamePlay);
             }
         });
 
@@ -106,6 +113,9 @@ public class LevelSelecting implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.audioManager.playSoundEffect(AudioManager.click);
+                game.audioManager.playSoundEffect(AudioManager.click);
+                gamePlay.setLevel(GamePlayLevel.DaiSo);
+                game.setScreen(gamePlay);
             }
         });
 

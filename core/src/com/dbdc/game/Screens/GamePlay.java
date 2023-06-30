@@ -33,7 +33,6 @@ import com.dbdc.game.entities.BulletEntity;
 import com.dbdc.game.entities.InteractableEntity;
 import com.dbdc.game.entities.InteractableType;
 import com.dbdc.game.entities.Item;
-import com.dbdc.game.manager.AudioManager;
 import com.jpcodes.physics.MotionState;
 import com.jpcodes.physics.controllers.camera.ThirdPersonCameraController;
 import com.jpcodes.physics.utils.Utils3D;
@@ -48,7 +47,7 @@ import java.util.List;
 
 public class GamePlay extends PhysicScreen {
 
-
+    private float LEVELTIME = 3F;
     private final DynamicCharacterController playerController;
     private SceneAsset playerAsset;
     private SceneAsset levelAsset;
@@ -62,8 +61,12 @@ public class GamePlay extends PhysicScreen {
     private VisLabel bookCountLabel;
     private Table table;
     private VisLabel isInteractableLabel;
+    private VisLabel timerLabel;
 
     // Gameplay params
+    GamePlayLevel level;
+    float levelCountdown;
+    boolean timerEnd;
     int bookCollected;
     boolean isInExamArea;
     private List<Item> levelItems;
@@ -89,6 +92,7 @@ public class GamePlay extends PhysicScreen {
         enemies = new ArrayList<>();
         diedEnemies = new ArrayList<>();
         interactableItems = new ArrayList<>();
+        level = GamePlayLevel.GiaiTich1;
 
         skin = new Skin();
 
@@ -115,6 +119,9 @@ public class GamePlay extends PhysicScreen {
     public void show() {
         super.show();
         game.audioManager.playGameplayMusic();
+        /*  gameplay setup *///
+        levelCountdown = LEVELTIME;
+        timerEnd = false;
         /*   UI setup *///
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         bookCountLabel = new VisLabel();
@@ -124,6 +131,10 @@ public class GamePlay extends PhysicScreen {
         isInteractableLabel.setPosition(Gdx.graphics.getWidth(),Gdx.graphics.getHeight() -10);
         isInteractableLabel.setAlignment(isInteractableLabel.getLabelAlign(), Align.right);
         stage.addActor(isInteractableLabel);
+        timerLabel = new VisLabel();
+        timerLabel.setPosition(Gdx.graphics.getWidth() / 2,Gdx.graphics.getHeight() -10);
+        timerLabel.setAlignment(timerLabel.getLabelAlign(), Align.center);
+        stage.addActor(timerLabel);
         table = new Table();
         stage.addActor(table);
         Gdx.input.setInputProcessor(stage);
@@ -143,18 +154,41 @@ public class GamePlay extends PhysicScreen {
     @Override
     public void render(float delta) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            game.setScreen(game.getScreen(GameScreen.MainMenu));
+            game.setScreen(game.getScreen(GameScreen.Levels));
             ClearScreen();
             return;
         }
         super.render(delta);
+        levelCountdown -= delta;
+        if(levelCountdown < 0  && !timerEnd) {
+            levelCountdown = 0;
+            timerEnd = true;
+            showResult(false,"Time out, you failed!");
+        }
         playerController.update(delta);
         for (EnemyController enemy: enemies) {
             enemy.update(delta);
         }
         if(playerController.examTaked && playerController.isExamDone) {
             playerController.resetExamStat();
-            InteractWithExam();
+            if(bookCollected >= 10) {
+                showResult(true,"Congratulation! You got A+");
+            } else if(bookCollected >= 9) {
+                showResult(true,"Congratulation! You got A");
+            } else if(bookCollected >= 8) {
+                showResult(true,"Congratulation! You got B+");
+            } else if(bookCollected >= 7) {
+                showResult(true,"Congratulation! You got B");
+            } else if(bookCollected >= 6) {
+                showResult(true,"Congratulation! You got C+");
+            } else if(bookCollected >= 5) {
+                showResult(true,"Congratulation! You got C");
+            } else if(bookCollected >= 4) {
+                showResult(true,"Congratulation! You got D+");
+            } else if(bookCollected >= 3) {
+                showResult(true,"Congratulation! You got D");
+            }
+            showResult(false,"You failed the exam! Try again...");
         }
 
         checkItemCollision(delta);
@@ -174,7 +208,7 @@ public class GamePlay extends PhysicScreen {
         } else {
             isInteractableLabel.setText("Not in area");
         }
-//        isInteractableLabel.setText("isInvincible: " + playerController.isInvincible);
+        timerLabel.setText((int) levelCountdown);
     }
 
     @Override
@@ -195,6 +229,11 @@ public class GamePlay extends PhysicScreen {
             itemAsset.dispose();
     }
 
+    public void setLevel(GamePlayLevel level) {
+        this.level = level;
+    }
+
+    // creatation methods
     private BulletEntity createCharacter(String charModelPath, Vector3 position) {
         playerAsset = new GLTFLoader().load(Gdx.files.internal(charModelPath));
         playerScene = new Scene(playerAsset.scene);
@@ -443,9 +482,32 @@ public class GamePlay extends PhysicScreen {
         playerController.EnableControl();
     }
 
+    private void showResult(boolean isPassed, String status) {
+        table.reset();
+        table.setFillParent(true);
+        table.defaults().pad(0f);
+        table.pack();
+
+        table.row();
+        TextButton levelButton = new TextButton("Back to select Level", skin);
+        table.add(levelButton);
+        table.setPosition(0,-80);
+        table.align(Align.center);
+
+        levelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(game.getScreen(GameScreen.Levels));
+                ClearScreen();
+            };
+        });
+        playerController.DisableControl();
+    }
+
     /* ClEAR SCREEN */
     private void ClearScreen() {
 //        dispose();
+        playerController.EnableControl();
         playerController.getCharacter().getBody().clearForces();
         playerController.getCharacter().getBody().setLinearVelocity(Vector3.Zero);
 //        playerController.getCharacter().getBody().setLinearFactor(Vector3.Zero);
