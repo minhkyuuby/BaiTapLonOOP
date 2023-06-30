@@ -32,7 +32,7 @@ public class GameClass extends Game {
 		gameScreens[GameScreen.Levels.ordinal()] = new LevelSelecting(this);
 		gameScreens[GameScreen.GamePlay.ordinal()] = new GamePlay(this);
 		gameScreens[GameScreen.AboutUs.ordinal()] = new AboutUs(this);
-		gameScreens[GameScreen.AboutUs.ordinal()] = new AboutUs(this);
+		gameScreens[GameScreen.Tutorial.ordinal()] = new Tutorial(this);
 		this.setScreen(getScreen(GameScreen.MainMenu));
 	}
 

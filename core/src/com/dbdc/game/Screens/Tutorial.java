@@ -21,7 +21,7 @@ public class Tutorial implements Screen {
     private Stage stage;
     private TextureAtlas atlas;
     private Skin skin;
-    private Texture tutuorialTexture = new Texture(Assets.tutorial);
+    private Texture tutorialTexture = new Texture(Assets.tutorial);
     private Button backButton;
 
     public Tutorial(final GameClass game) {
@@ -35,7 +35,7 @@ public class Tutorial implements Screen {
         skin = new Skin(atlas);
         final MainMenu menu = new MainMenu(game);
 
-        Image auImage = new Image(tutuorialTexture);
+        Image tutorialImage = new Image(tutorialTexture);
 
         stage.addAction(Actions.sequence(Actions.alpha(0,0f),Actions.fadeIn(0.3f)));
 
@@ -46,7 +46,7 @@ public class Tutorial implements Screen {
 
         backButton.setPosition(50,600);
 
-        stage.addActor(auImage);
+        stage.addActor(tutorialImage);
         stage.addActor(backButton);
 
         backButton.addListener(new ClickListener() {
