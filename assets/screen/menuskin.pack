@@ -1,76 +1,76 @@
 
 menuskin.png
-size: 2048, 256
+size: 1024, 256
 format: RGBA8888
 filter: Nearest, Nearest
 repeat: none
 aboutus_down
   rotate: false
-  xy: 887, 80
+  xy: 619, 3
   size: 191, 107
   orig: 191, 107
   offset: 0, 0
   index: -1
 aboutus_up
   rotate: false
-  xy: 298, 2
+  xy: 812, 2
   size: 191, 108
   orig: 191, 108
   offset: 0, 0
   index: -1
 exit_down
   rotate: false
-  xy: 298, 184
+  xy: 612, 179
   size: 296, 70
   orig: 296, 70
   offset: 0, 0
   index: -1
 exit_up
   rotate: false
-  xy: 298, 112
+  xy: 316, 103
   size: 296, 70
   orig: 296, 70
   offset: 0, 0
   index: -1
-level_down
-  rotate: false
-  xy: 2, 29
-  size: 289, 73
-  orig: 289, 73
-  offset: 0, 0
-  index: -1
-level_up
-  rotate: false
-  xy: 596, 114
-  size: 289, 73
-  orig: 289, 73
-  offset: 0, 0
-  index: -1
 option_down
   rotate: false
-  xy: 596, 189
+  xy: 614, 112
   size: 301, 65
   orig: 301, 65
   offset: 0, 0
   index: -1
 option_up
   rotate: false
-  xy: 899, 189
+  xy: 316, 36
   size: 301, 65
   orig: 301, 65
   offset: 0, 0
   index: -1
-play_down 
+level_down
   rotate: false
-  xy: 2, 180
+  xy: 316, 175
   size: 294, 74
   orig: 294, 74
   offset: 0, 0
   index: -1
-play_up
+level_up
   rotate: false
-  xy: 2, 104
+  xy: 2, 13
   size: 294, 74
   orig: 294, 74
+  offset: 0, 0
+  index: -1
+tutorial_down
+  rotate: false
+  xy: 2, 89
+  size: 312, 78
+  orig: 312, 78
+  offset: 0, 0
+  index: -1
+tutorial_up
+  rotate: false
+  xy: 2, 169
+  size: 312, 80
+  orig: 312, 80
   offset: 0, 0
   index: -1

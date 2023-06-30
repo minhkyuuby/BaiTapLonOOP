@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.dbdc.game.Screens.AboutUs;
+import com.dbdc.game.Screens.Tutorial;
 import com.dbdc.game.Screens.GamePlay;
 import com.dbdc.game.Screens.LevelSelecting;
 import com.dbdc.game.Screens.MainMenu;
@@ -31,7 +32,7 @@ public class GameClass extends Game {
 		gameScreens[GameScreen.Levels.ordinal()] = new LevelSelecting(this);
 		gameScreens[GameScreen.GamePlay.ordinal()] = new GamePlay(this);
 		gameScreens[GameScreen.AboutUs.ordinal()] = new AboutUs(this);
-
+		gameScreens[GameScreen.AboutUs.ordinal()] = new AboutUs(this);
 		this.setScreen(getScreen(GameScreen.MainMenu));
 	}
 

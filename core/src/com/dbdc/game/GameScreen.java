@@ -4,5 +4,5 @@ public enum GameScreen {
     MainMenu,
     Levels,
     GamePlay,
-    AboutUs
+    Tutorial, AboutUs
 }
