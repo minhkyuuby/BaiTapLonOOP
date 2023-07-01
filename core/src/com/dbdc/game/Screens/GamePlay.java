@@ -47,9 +47,10 @@ import java.util.List;
 
 public class GamePlay extends PhysicScreen {
 
-    private float LEVELTIME = 3F;
+    private float LEVELTIME = 60F;
     private final DynamicCharacterController playerController;
     private SceneAsset playerAsset;
+    private String crtCharacterModelPath;
     private SceneAsset levelAsset;
     private SceneAsset itemAsset;
     private Scene playerScene;
@@ -120,6 +121,7 @@ public class GamePlay extends PhysicScreen {
         super.show();
         game.audioManager.playGameplayMusic();
         /*  gameplay setup *///
+        crtCharacterModelPath = "";
         levelCountdown = LEVELTIME;
         timerEnd = false;
         /*   UI setup *///
@@ -140,9 +142,11 @@ public class GamePlay extends PhysicScreen {
         Gdx.input.setInputProcessor(stage);
 
         // Load a walkable area
-        createLevel("models/level.gltf", "models/level/level.obj");
+        createLevel("models/level/GT1/floors.gltf", "models/level/GT1/floors.obj");
         levelItems.add(createLevelItem("models/item/bookItem.gltf", new Vector3(0, 3, 3)));
-        enemies.add(createLevelEnemy("models/character/brokenminion.gltf", new Vector3(0, 10, -5)));
+        enemies.add(createLevelEnemy("models/character/warrior_broken.gltf", new Vector3(0, 10, -5)));
+        enemies.add(createLevelEnemy("models/character/warrior_broken.gltf", new Vector3(0, 10, 5)));
+        enemies.add(createLevelEnemy("models/character/warrior_broken.gltf", new Vector3(2, 10, 5)));
         interactableItems.add(createLevelInteractable("models/item/exambook.gltf", new Vector3(5, 3, - 5), InteractableType.FinalExamInteract));
 
         /* Setup player Position */
@@ -235,7 +239,9 @@ public class GamePlay extends PhysicScreen {
 
     // creatation methods
     private BulletEntity createCharacter(String charModelPath, Vector3 position) {
-        playerAsset = new GLTFLoader().load(Gdx.files.internal(charModelPath));
+        if(!(crtCharacterModelPath == charModelPath)) {
+            playerAsset = new GLTFLoader().load(Gdx.files.internal(charModelPath));
+        }
         playerScene = new Scene(playerAsset.scene);
         ModelInstance playerModelInstance = playerScene.modelInstance;
 

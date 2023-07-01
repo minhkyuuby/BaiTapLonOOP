@@ -13,6 +13,7 @@ public class DesktopLauncher {
 		config.setWindowedMode(1280, 720);
 //		config.setWindowedMode(360*2, 180*2);
 		config.useVsync(true);
+		config.setResizable(false);
 //		new Lwjgl3Application(new Drop(), config);
 		new Lwjgl3Application(new GameClass(), config);
 //		new Lwjgl3Application(new BulletPhysics(), config);

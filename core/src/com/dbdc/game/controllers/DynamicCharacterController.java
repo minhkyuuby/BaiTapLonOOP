@@ -13,7 +13,7 @@ import com.jpcodes.physics.utils.Utils3D;
 public class DynamicCharacterController implements AnimationController.AnimationListener {
 
     public static float ATTACK_RADIUS = 2f;
-    private final float MOVE_SPEED = 28f;
+    private final float MOVE_SPEED = 32f;
     private final float JUMP_FACTOR = 15f;
 
     public boolean isAttacking = false, isInvincible = false, examTaked = false, isExamDone = false;
@@ -71,9 +71,9 @@ public class DynamicCharacterController implements AnimationController.Animation
 
         // Forward movement
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            linearVelocity.set(currentDirection).scl(delta * MOVE_SPEED * 1.8f);
+            linearVelocity.set(currentDirection).scl(delta * MOVE_SPEED);
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            linearVelocity.set(currentDirection).scl(-delta * MOVE_SPEED * 1.8f);
+            linearVelocity.set(currentDirection).scl(-delta * MOVE_SPEED);
         }
 
         // Turning
