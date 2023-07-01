@@ -635,64 +635,64 @@ public class GamePlay extends PhysicScreen {
             case 3:
                 table.row();
                 table.add(passBG);
-                book3.setPosition(501,320);
-                D.setPosition(562,111);
+                book3.setPosition(500,293);
+                D.setPosition(562,90);
                 stage.addActor(D);
                 stage.addActor(book3);
                 break;
             case 4:
                 table.row();
                 table.add(passBG);
-                book4.setPosition(501,320);
-                Dplus.setPosition(562,111);
+                book4.setPosition(500,293);
+                Dplus.setPosition(562,90);
                 stage.addActor(Dplus);
                 stage.addActor(book4);
                 break;
             case 5:
                 table.row();
                 table.add(passBG);
-                book5.setPosition(501,320);
-                C.setPosition(562,111);
+                book5.setPosition(500,293);
+                C.setPosition(562,90);
                 stage.addActor(C);
                 stage.addActor(book5);
                 break;
             case 6:
                 table.row();
                 table.add(passBG);
-                book6.setPosition(501,320);
-                Cplus.setPosition(562,111);
+                book6.setPosition(500,293);
+                Cplus.setPosition(562,90);
                 stage.addActor(Cplus);
                 stage.addActor(book6);
                 break;
             case 7:
                 table.row();
                 table.add(passBG);
-                book7.setPosition(501,320);
-                B.setPosition(562,111);
+                book7.setPosition(500,293);
+                B.setPosition(562,90);
                 stage.addActor(B);
                 stage.addActor(book7);
                 break;
             case 8:
                 table.row();
                 table.add(passBG);
-                book8.setPosition(501,320);
-                Bplus.setPosition(562,111);
+                book8.setPosition(500,293);
+                Bplus.setPosition(562,90);
                 stage.addActor(Bplus);
                 stage.addActor(book8);
                 break;
             case 9:
                 table.row();
                 table.add(passBG);
-                book9.setPosition(501,320);
-                A.setPosition(562,111);
+                book9.setPosition(500,293);
+                A.setPosition(562,90);
                 stage.addActor(A);
                 stage.addActor(book9);
                 break;
             case 10:
                 table.row();
                 table.add(passBG);
-                book10.setPosition(501,320);
-                Aplus.setPosition(562,111);
+                book10.setPosition(500,293);
+                Aplus.setPosition(562,90);
                 stage.addActor(Aplus);
                 stage.addActor(book10);
                 break;
