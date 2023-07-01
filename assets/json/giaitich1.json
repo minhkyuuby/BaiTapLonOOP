@@ -1,0 +1,96 @@
+{
+    "items": [
+      {
+        "itemPath": "models/item/bookItem.gltf",
+        "position": {
+          "x": -5,
+          "y": 3.0,
+          "z": 62.5
+        }
+      }
+    ],
+    "enemies": [
+      {
+        "charModelPath": "models/character/brokenminion.gltf",
+        "position": {
+          "x": 0.0,
+          "y": 5.0,
+          "z": -5.0
+        }
+      },
+      {
+        "charModelPath": "models/character/brokenminion.gltf",
+        "position": {
+          "x": 3.0,
+          "y": 5.0,
+          "z": 8.0
+        }
+      },
+      {
+        "charModelPath": "models/character/brokenminion.gltf",
+        "position": {
+          "x": -2.0,
+          "y": 5.0,
+          "z": 11.0
+        }
+      },
+      {
+        "charModelPath": "models/character/brokenminion.gltf",
+        "position": {
+          "x": 3.0,
+          "y": 5.0,
+          "z": 18.0
+        }
+      },
+      {
+        "charModelPath": "models/character/brokenminion.gltf",
+        "position": {
+          "x": -3.5,
+          "y": 5.0,
+          "z": 25.0
+        }
+      },
+      {
+        "charModelPath": "models/character/brokenminion.gltf",
+        "position": {
+          "x": 3.5,
+          "y": 5.0,
+          "z": 26.0
+        }
+      },
+      {
+        "charModelPath": "models/character/brokenminion.gltf",
+        "position": {
+          "x": 3.2,
+          "y": 5.0,
+          "z": 35.0
+        }
+      },
+      {
+        "charModelPath": "models/character/brokenminion.gltf",
+        "position": {
+          "x": 3.6,
+          "y": 5.0,
+          "z": 35.0
+        }
+      },
+      {
+        "charModelPath": "models/character/brokenminion.gltf",
+        "position": {
+          "x": -3,
+          "y": 5.0,
+          "z": 35.0
+        }
+      }
+    ],
+    "levelScenePath" : "models/level/GT1/floors.gltf",
+    "levelBodyPath" : "models/level/GT1/floors.obj",
+    "interactableItem": {
+      "itemPath" : "models/item/exambook.gltf",
+      "position": {
+        "x": 0.0,
+        "y" : 3.0,
+        "z": 55.0
+      }
+    }
+  }

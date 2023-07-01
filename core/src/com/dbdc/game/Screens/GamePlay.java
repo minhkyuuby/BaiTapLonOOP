@@ -2,6 +2,7 @@ package com.dbdc.game.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -23,16 +24,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.dbdc.game.GameClass;
 import com.dbdc.game.GameScreen;
+import com.dbdc.game.JsonObject.Enemies;
+import com.dbdc.game.JsonObject.LevelData;
 import com.dbdc.game.controllers.DynamicCharacterController;
 import com.dbdc.game.controllers.EnemyController;
 import com.dbdc.game.entities.BulletEntity;
 import com.dbdc.game.entities.InteractableEntity;
 import com.dbdc.game.entities.InteractableType;
 import com.dbdc.game.entities.Item;
+import com.dbdc.game.JsonObject.Items;
 import com.jpcodes.physics.MotionState;
 import com.jpcodes.physics.controllers.camera.ThirdPersonCameraController;
 import com.jpcodes.physics.utils.Utils3D;
@@ -45,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+
 public class GamePlay extends PhysicScreen {
 
     private float LEVELTIME = 60F;
@@ -54,7 +61,8 @@ public class GamePlay extends PhysicScreen {
     private SceneAsset levelAsset;
     private SceneAsset itemAsset;
     private Scene playerScene;
-
+    private Scene levelScene;
+    private btRigidBody levelBody;
 
     // UI components
     private Stage stage;
@@ -142,12 +150,32 @@ public class GamePlay extends PhysicScreen {
         Gdx.input.setInputProcessor(stage);
 
         // Load a walkable area
-        createLevel("models/level/GT1/floors.gltf", "models/level/GT1/floors.obj");
-        levelItems.add(createLevelItem("models/item/bookItem.gltf", new Vector3(0, 3, 3)));
-        enemies.add(createLevelEnemy("models/character/warrior_broken.gltf", new Vector3(0, 10, -5)));
-        enemies.add(createLevelEnemy("models/character/warrior_broken.gltf", new Vector3(0, 10, 5)));
-        enemies.add(createLevelEnemy("models/character/warrior_broken.gltf", new Vector3(2, 10, 5)));
-        interactableItems.add(createLevelInteractable("models/item/exambook.gltf", new Vector3(5, 3, - 5), InteractableType.FinalExamInteract));
+        // Load the JSON file
+        String jsonPath = "json/example.json";
+        if(level == GamePlayLevel.GiaiTich1) {
+            jsonPath = "json/giaitich1.json";
+        }
+        if(level == GamePlayLevel.GiaiTich2) {
+            jsonPath = "json/giaitich2.json";
+        }
+        FileHandle fileHandle = Gdx.files.internal(jsonPath);
+        String json = fileHandle.readString();
+
+        // Parse the JSON into the Item class
+        JsonReader jsonReader = new JsonReader();
+        Json jsonParser = new Json();
+        LevelData leveldata = jsonParser.fromJson(LevelData.class, String.valueOf(jsonReader.parse(json)));
+        createLevel(leveldata.getLevelScenePath(), leveldata.getLevelBodyPath());
+        ArrayList<Items> itemsData = leveldata.getItems();
+        ArrayList<Enemies> enemiesData = leveldata.getEnemies();
+        Items interactableItem = leveldata.getInteractableItem();
+        for (Items item: itemsData) {
+            levelItems.add(createLevelItem(item.getItemPath(), item.getPosition()));
+        }
+        for(Enemies e : enemiesData) {
+            enemies.add(createLevelEnemy(e.getCharModelPath(), e.getPosition()));
+        }
+        interactableItems.add(createLevelInteractable(interactableItem.getItemPath(), interactableItem.getPosition(), InteractableType.FinalExamInteract));
 
         /* Setup player Position */
         Matrix4 transform = new Matrix4();
@@ -276,7 +304,7 @@ public class GamePlay extends PhysicScreen {
         // Add damping so we dont slide forever!
         body.setDamping(0.75f, 0.99f);
 
-        renderInstances.add(playerModelInstance);
+//        renderInstances.add(playerModelInstance);
         bulletPhysicsSystem.addBody(body);
         info.dispose();
         return new BulletEntity(body, playerScene);
@@ -284,19 +312,19 @@ public class GamePlay extends PhysicScreen {
 
     private void createLevel(String levelScenePath, String levelBodyPath) {
         levelAsset = new GLTFLoader().load(Gdx.files.internal(levelScenePath));
-        Scene levelScene = new Scene(levelAsset.scene);
+        levelScene = new Scene(levelAsset.scene);
         Model sceneModel = Utils3D.loadOBJ(Gdx.files.internal(levelBodyPath));
         ModelInstance sceneInstance = new ModelInstance(sceneModel);
         sceneInstance.materials.get(0).set(ColorAttribute.createDiffuse(Color.FOREST));
 
         addSceneToSceneManager(levelScene);
-        renderInstances.add(sceneInstance);
+//        renderInstances.add(sceneInstance);
 
         btCollisionShape shape = Bullet.obtainStaticNodeShape(sceneInstance.nodes);
         btRigidBody.btRigidBodyConstructionInfo sceneInfo = new btRigidBody.btRigidBodyConstructionInfo(0f, null, shape, Vector3.Zero);
-        btRigidBody body = new btRigidBody(sceneInfo);
+        levelBody = new btRigidBody(sceneInfo);
         sceneInfo.dispose();
-        bulletPhysicsSystem.addBody(body);
+        bulletPhysicsSystem.addBody(levelBody);
     }
 
     private Item createLevelItem(String itemPath, Vector3 position) {
@@ -307,7 +335,7 @@ public class GamePlay extends PhysicScreen {
 //        sceneInstance.materials.get(0).set(ColorAttribute.createDiffuse(Color.FOREST));
         addSceneToSceneManager(itemScene);
 
-        renderInstances.add(itemInstance);
+//        renderInstances.add(itemInstance);
         itemInstance.transform.setToTranslation(position);
 
         BoundingBox boundingBox = new BoundingBox();
@@ -533,7 +561,14 @@ public class GamePlay extends PhysicScreen {
             bulletPhysicsSystem.removeBody(enemy.getCharacter().getBody());
         }
         enemies.clear();
+        for (EnemyController enemy : diedEnemies) {
+            removeSceneFromSceneManager(enemy.getCharacter().getModelScene());
+            bulletPhysicsSystem.removeBody(enemy.getCharacter().getBody());
+        }
+        diedEnemies.clear();
 
+        if(levelScene != null) removeSceneFromSceneManager(levelScene);
+        if(levelBody != null) bulletPhysicsSystem.removeBody(levelBody);
 
         bookCollected = 0;
         isInExamArea = false;

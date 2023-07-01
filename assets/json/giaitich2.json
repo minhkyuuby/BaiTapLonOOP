@@ -1,0 +1,40 @@
+{
+    "items": [
+      {
+        "itemPath": "models/item/bookItem.gltf",
+        "position": {
+          "x": -5,
+          "y": 3.0,
+          "z": 62.5
+        }
+      }
+    ],
+    "enemies": [
+      {
+        "charModelPath": "models/character/brokenminion.gltf",
+        "position": {
+          "x": 0.0,
+          "y": 5.0,
+          "z": -5.0
+        }
+      },
+      {
+        "charModelPath": "models/character/brokenminion.gltf",
+        "position": {
+          "x": 3.0,
+          "y": 5.0,
+          "z": 8.0
+        }
+      }
+    ],
+    "levelScenePath" : "models/level/GT2/floors.gltf",
+    "levelBodyPath" : "models/level/GT2/floors.obj",
+    "interactableItem": {
+      "itemPath" : "models/item/exambook.gltf",
+      "position": {
+        "x": 0.0,
+        "y" : 3.0,
+        "z": 55.0
+      }
+    }
+  }

@@ -113,7 +113,6 @@ public class LevelSelecting implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.audioManager.playSoundEffect(AudioManager.click);
-                game.audioManager.playSoundEffect(AudioManager.click);
                 gamePlay.setLevel(GamePlayLevel.DaiSo);
                 game.setScreen(gamePlay);
             }

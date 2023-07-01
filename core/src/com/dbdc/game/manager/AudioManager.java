@@ -5,7 +5,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 
 public class AudioManager {
-    private static final float DEFAULT_VOLUME = 1.0f;
+    private static final float DEFAULT_VOLUME = 0f;
     private Music backgroundMusic;
     private Music gameplayMusic;
     private Sound soundEffect;
