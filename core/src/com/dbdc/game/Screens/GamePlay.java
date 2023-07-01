@@ -3,9 +3,9 @@ package com.dbdc.game.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -19,9 +19,7 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -47,7 +45,6 @@ import java.util.List;
 
 public class GamePlay extends PhysicScreen {
 
-    private float LEVELTIME = 3F;
     private final DynamicCharacterController playerController;
     private SceneAsset playerAsset;
     private SceneAsset levelAsset;
@@ -57,18 +54,22 @@ public class GamePlay extends PhysicScreen {
 
     // UI components
     private Stage stage;
-    private Skin skin;
-    private VisLabel bookCountLabel;
-    private Table table;
-    private VisLabel isInteractableLabel;
+    private Table table, layoutTable;
     private VisLabel timerLabel;
-
+    private BitmapFont font;
+    private Button pressE, acceptBtn, declineBtn, levelBtn;
+    private TextureAtlas atlas, resultatlas;
+    private Skin uiSkin, resultSkin;
+    private SpriteBatch batch;
     // Gameplay params
     GamePlayLevel level;
-    float levelCountdown;
     boolean timerEnd;
     int bookCollected;
     boolean isInExamArea;
+    private int seconds = 0,
+            minutes = 2;
+    private int LEVELTIME;
+    private float accumulatedTime;
     private List<Item> levelItems;
     private List<EnemyController> enemies;
     private List<EnemyController> diedEnemies;
@@ -93,51 +94,66 @@ public class GamePlay extends PhysicScreen {
         diedEnemies = new ArrayList<>();
         interactableItems = new ArrayList<>();
         level = GamePlayLevel.GiaiTich1;
+        accumulatedTime = 0;
 
-        skin = new Skin();
-
-        // Generate a 1x1 white texture and store it in the skin named "white".
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(Color.WHITE);
-        pixmap.fill();
-        skin.add("white", new Texture(pixmap));
-
-        // Store the default libGDX font under the name "default".
-        skin.add("default", new BitmapFont());
-
-        // Configure a TextButtonStyle and name it "default". Skin resources are stored by type, so this doesn't overwrite the font.
-        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.up = skin.newDrawable("white", Color.DARK_GRAY);
-        textButtonStyle.down = skin.newDrawable("white", Color.DARK_GRAY);
-        textButtonStyle.checked = skin.newDrawable("white", Color.BLUE);
-        textButtonStyle.over = skin.newDrawable("white", Color.LIGHT_GRAY);
-        textButtonStyle.font = skin.getFont("default");
-        skin.add("default", textButtonStyle);
     }
 
     @Override
     public void show() {
         super.show();
         game.audioManager.playGameplayMusic();
+
         /*  gameplay setup *///
-        levelCountdown = LEVELTIME;
         timerEnd = false;
+        font = new BitmapFont(Gdx.files.internal("myfont.fnt"));
+        font.getData().setScale(0.8f);
+
+        atlas = new TextureAtlas("screen/gameUI.pack");
+        uiSkin = new Skin(atlas);
+        resultatlas = new TextureAtlas("screen/resultSkin.pack");
+        resultSkin = new Skin(resultatlas);
+
+        batch = new SpriteBatch();
+        table = new Table();
+
         /*   UI setup *///
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-        bookCountLabel = new VisLabel();
-        bookCountLabel.setPosition(10f,Gdx.graphics.getHeight() -10);
-        stage.addActor(bookCountLabel);
-        isInteractableLabel = new VisLabel();
-        isInteractableLabel.setPosition(Gdx.graphics.getWidth(),Gdx.graphics.getHeight() -10);
-        isInteractableLabel.setAlignment(isInteractableLabel.getLabelAlign(), Align.right);
-        stage.addActor(isInteractableLabel);
-        timerLabel = new VisLabel();
-        timerLabel.setPosition(Gdx.graphics.getWidth() / 2,Gdx.graphics.getHeight() -10);
-        timerLabel.setAlignment(timerLabel.getLabelAlign(), Align.center);
+
+        Image bookCountBG = new Image(uiSkin.getDrawable("bookcount"));
+        Image timerBG = new Image(uiSkin.getDrawable("timer"));
+
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = font;
+
+        ImageButton.ImageButtonStyle pressEStyle = new ImageButton.ImageButtonStyle();
+        pressEStyle.up = uiSkin.getDrawable("pressE_up");
+        pressEStyle.down = uiSkin.getDrawable("pressE_down");
+        pressE = new ImageButton(pressEStyle);
+
+        stage.addActor(pressE);
+
+        timerLabel = new VisLabel(getFormattedTime(), labelStyle);
+        timerLabel.setPosition(85,648);
+
+        layoutTable = new Table();
+        layoutTable.top();
+        layoutTable.setFillParent(true);
+
+        layoutTable.row();
+        layoutTable.add(timerBG).align(Align.left).padTop(10f).padLeft(10f);
+        layoutTable.row();
+        layoutTable.add(bookCountBG).expandX().align(Align.left).padLeft(10f);
+
+        stage.addActor(layoutTable);
         stage.addActor(timerLabel);
-        table = new Table();
         stage.addActor(table);
         Gdx.input.setInputProcessor(stage);
+
+        // Show result
+        if (LEVELTIME < 0 && !timerEnd) {
+            timerEnd = true;
+            showResult(0);
+        }
 
         // Load a walkable area
         createLevel("models/level.gltf", "models/level/level.obj");
@@ -151,6 +167,41 @@ public class GamePlay extends PhysicScreen {
         playerController.getCharacter().getBody().setWorldTransform(transform);
     }
 
+    private void updateTimer (float delta) {
+        accumulatedTime += delta;
+        LEVELTIME = minutes * 60 + seconds;
+
+        if (accumulatedTime >= 1f) {
+            LEVELTIME--;
+            if (LEVELTIME < 0) {
+                LEVELTIME = 0;
+            }
+            minutes = LEVELTIME / 60;
+            seconds = LEVELTIME % 60;
+
+            timerLabel.setText(getFormattedTime());
+            accumulatedTime = 0;
+        }
+    }
+
+
+    public String getFormattedTime() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if(minutes < 10) {
+            stringBuilder.append(0);
+        }
+        stringBuilder.append(minutes);
+        stringBuilder.append(":");
+
+        if(seconds < 10) {
+            stringBuilder.append(0);
+        }
+        stringBuilder.append(seconds);
+        return stringBuilder.toString();
+    }
+
+
     @Override
     public void render(float delta) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
@@ -159,36 +210,26 @@ public class GamePlay extends PhysicScreen {
             return;
         }
         super.render(delta);
-        levelCountdown -= delta;
-        if(levelCountdown < 0  && !timerEnd) {
-            levelCountdown = 0;
-            timerEnd = true;
-            showResult(false,"Time out, you failed!");
-        }
+
         playerController.update(delta);
         for (EnemyController enemy: enemies) {
             enemy.update(delta);
         }
+
+        if(isInExamArea) {
+            pressE.setPosition(720,400);
+            pressE.setVisible(true);
+            if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+                pressE.remove();
+                InteractWithExam();
+            }
+        } else {
+            pressE.setVisible(false);
+        }
+
         if(playerController.examTaked && playerController.isExamDone) {
             playerController.resetExamStat();
-            if(bookCollected >= 10) {
-                showResult(true,"Congratulation! You got A+");
-            } else if(bookCollected >= 9) {
-                showResult(true,"Congratulation! You got A");
-            } else if(bookCollected >= 8) {
-                showResult(true,"Congratulation! You got B+");
-            } else if(bookCollected >= 7) {
-                showResult(true,"Congratulation! You got B");
-            } else if(bookCollected >= 6) {
-                showResult(true,"Congratulation! You got C+");
-            } else if(bookCollected >= 5) {
-                showResult(true,"Congratulation! You got C");
-            } else if(bookCollected >= 4) {
-                showResult(true,"Congratulation! You got D+");
-            } else if(bookCollected >= 3) {
-                showResult(true,"Congratulation! You got D");
-            }
-            showResult(false,"You failed the exam! Try again...");
+            showResult(bookCollected);
         }
 
         checkItemCollision(delta);
@@ -197,18 +238,13 @@ public class GamePlay extends PhysicScreen {
         checkDiedEnemies(delta);
 
         /* UI update */
+        batch.begin();
+        font.draw(batch, "" + bookCollected, 90f,Gdx.graphics.getHeight() - 140f);
         stage.act();
         stage.draw();
-        bookCountLabel.setText("Book count: " + bookCollected);
-        if(isInExamArea) {
-            isInteractableLabel.setText("exam available: press E to take the final exam!");
-            if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
-                InteractWithExam();
-            }
-        } else {
-            isInteractableLabel.setText("Not in area");
-        }
-        timerLabel.setText((int) levelCountdown);
+        batch.end();
+        updateTimer(delta);
+
     }
 
     @Override
@@ -442,19 +478,27 @@ public class GamePlay extends PhysicScreen {
 
     /* Gameplay Decision */
     private void InteractWithExam() {
+
+        ImageButton.ImageButtonStyle acceptStyle = new ImageButton.ImageButtonStyle();
+        acceptStyle.up = uiSkin.getDrawable("taketheexam_up");
+        acceptStyle.down = uiSkin.getDrawable("taketheexam_down");
+        acceptBtn = new ImageButton(acceptStyle);
+
+        ImageButton.ImageButtonStyle declineStyle = new ImageButton.ImageButtonStyle();
+        declineStyle.up = uiSkin.getDrawable("decline_up");
+        declineStyle.down = uiSkin.getDrawable("decline_down");
+        declineBtn = new ImageButton(declineStyle);
+
         table.reset();
         table.setFillParent(true);
         table.defaults().pad(0f);
         table.pack();
 
         table.row();
-        TextButton acceptBtn = new TextButton("Take the Exam", skin);
         table.add(acceptBtn);
         table.row();
-        TextButton declineBtn = new TextButton("Decline", skin);
         table.add(declineBtn);
-        table.setPosition(0,-80);
-        table.align(Align.center);
+        table.setPosition(218,39);
 
         acceptBtn.addListener(new ClickListener() {
             @Override
@@ -477,27 +521,148 @@ public class GamePlay extends PhysicScreen {
         table.reset();
     }
 
+    private void resetTimer() {
+        seconds = 0;
+        minutes = 2;
+        accumulatedTime = 0;
+        timerEnd = false;
+    }
+
     private void DeclineExam() {
         table.reset();
         playerController.EnableControl();
     }
 
-    private void showResult(boolean isPassed, String status) {
+    private void showResult(int bookColl) {
+
+        ImageButton.ImageButtonStyle backLevelStyle = new ImageButton.ImageButtonStyle();
+        backLevelStyle.up = resultSkin.getDrawable("backtolevel_up");
+        backLevelStyle.down = resultSkin.getDrawable("backtolevel_down");
+        levelBtn = new ImageButton(backLevelStyle);
+
+        Image passBG = new Image(resultSkin.getDrawable("passbg"));
+        Image failBG = new Image(resultSkin.getDrawable("failbg"));
+        Image Aplus = new Image(resultSkin.getDrawable("A+"));
+        Image A = new Image(resultSkin.getDrawable("A"));
+        Image Bplus = new Image(resultSkin.getDrawable("B+"));
+        Image B = new Image(resultSkin.getDrawable("B"));
+        Image Cplus = new Image(resultSkin.getDrawable("C+"));
+        Image C = new Image(resultSkin.getDrawable("C"));
+        Image Dplus = new Image(resultSkin.getDrawable("D+"));
+        Image D = new Image(resultSkin.getDrawable("D"));
+        Image book0 = new Image(resultSkin.getDrawable("book0"));
+        Image book1 = new Image(resultSkin.getDrawable("book01"));
+        Image book2 = new Image(resultSkin.getDrawable("book02"));
+        Image book3 = new Image(resultSkin.getDrawable("book03"));
+        Image book4 = new Image(resultSkin.getDrawable("book04"));
+        Image book5 = new Image(resultSkin.getDrawable("book05"));
+        Image book6 = new Image(resultSkin.getDrawable("book06"));
+        Image book7 = new Image(resultSkin.getDrawable("book07"));
+        Image book8 = new Image(resultSkin.getDrawable("book08"));
+        Image book9 = new Image(resultSkin.getDrawable("book09"));
+        Image book10 = new Image(resultSkin.getDrawable("book10"));
+
         table.reset();
         table.setFillParent(true);
         table.defaults().pad(0f);
         table.pack();
 
-        table.row();
-        TextButton levelButton = new TextButton("Back to select Level", skin);
-        table.add(levelButton);
-        table.setPosition(0,-80);
-        table.align(Align.center);
+        switch (bookColl) {
+            case 0:
+                table.row();
+                table.add(failBG);
+                book0.setPosition(501,320);
+                stage.addActor(book0);
+                break;
+            case 1:
+                table.row();
+                table.add(failBG);
+                book1.setPosition(501,320);
+                stage.addActor(book1);
+                break;
+            case 2:
+                table.row();
+                table.add(failBG);
+                book2.setPosition(501,320);
+                stage.addActor(book2);
+                break;
+            case 3:
+                table.row();
+                table.add(passBG);
+                book3.setPosition(501,320);
+                D.setPosition(562,111);
+                stage.addActor(D);
+                stage.addActor(book3);
+                break;
+            case 4:
+                table.row();
+                table.add(passBG);
+                book4.setPosition(501,320);
+                Dplus.setPosition(562,111);
+                stage.addActor(Dplus);
+                stage.addActor(book4);
+                break;
+            case 5:
+                table.row();
+                table.add(passBG);
+                book5.setPosition(501,320);
+                C.setPosition(562,111);
+                stage.addActor(C);
+                stage.addActor(book5);
+                break;
+            case 6:
+                table.row();
+                table.add(passBG);
+                book6.setPosition(501,320);
+                Cplus.setPosition(562,111);
+                stage.addActor(Cplus);
+                stage.addActor(book6);
+                break;
+            case 7:
+                table.row();
+                table.add(passBG);
+                book7.setPosition(501,320);
+                B.setPosition(562,111);
+                stage.addActor(B);
+                stage.addActor(book7);
+                break;
+            case 8:
+                table.row();
+                table.add(passBG);
+                book8.setPosition(501,320);
+                Bplus.setPosition(562,111);
+                stage.addActor(Bplus);
+                stage.addActor(book8);
+                break;
+            case 9:
+                table.row();
+                table.add(passBG);
+                book9.setPosition(501,320);
+                A.setPosition(562,111);
+                stage.addActor(A);
+                stage.addActor(book9);
+                break;
+            case 10:
+                table.row();
+                table.add(passBG);
+                book10.setPosition(501,320);
+                Aplus.setPosition(562,111);
+                stage.addActor(Aplus);
+                stage.addActor(book10);
+                break;
+        }
 
-        levelButton.addListener(new ClickListener() {
+        table.row();
+        table.add(levelBtn);
+        table.setPosition(0,0);
+        table.padTop(20f);
+        table.align(Align.center).align(Align.bottom).padBottom(20f);
+
+        levelBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(game.getScreen(GameScreen.Levels));
+                resetTimer();
                 ClearScreen();
             };
         });

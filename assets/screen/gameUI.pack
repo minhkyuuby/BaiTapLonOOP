@@ -1,0 +1,76 @@
+
+gameUI.png
+size: 2048, 128
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+backtoselectlevel_down
+  rotate: false
+  xy: 1104, 56
+  size: 270, 52
+  orig: 270, 52
+  offset: 0, 0
+  index: -1
+backtoselectlevel_up
+  rotate: false
+  xy: 281, 3
+  size: 272, 51
+  orig: 272, 51
+  offset: 0, 0
+  index: -1
+bookcount
+  rotate: false
+  xy: 1827, 24
+  size: 130, 84
+  orig: 130, 84
+  offset: 0, 0
+  index: -1
+decline_down
+  rotate: false
+  xy: 832, 56
+  size: 270, 52
+  orig: 270, 52
+  offset: 0, 0
+  index: -1
+decline_up
+  rotate: false
+  xy: 2, 2
+  size: 277, 52
+  orig: 277, 52
+  offset: 0, 0
+  index: -1
+pressE_down
+  rotate: false
+  xy: 1376, 56
+  size: 270, 52
+  orig: 270, 52
+  offset: 0, 0
+  index: -1
+pressE_up
+  rotate: false
+  xy: 2, 56
+  size: 277, 52
+  orig: 277, 52
+  offset: 0, 0
+  index: -1
+taketheexam_down
+  rotate: false
+  xy: 560, 56
+  size: 270, 52
+  orig: 270, 52
+  offset: 0, 0
+  index: -1
+taketheexam_up
+  rotate: false
+  xy: 281, 56
+  size: 277, 52
+  orig: 277, 52
+  offset: 0, 0
+  index: -1
+timer
+  rotate: false
+  xy: 1648, 21
+  size: 177, 87
+  orig: 177, 87
+  offset: 0, 0
+  index: -1
