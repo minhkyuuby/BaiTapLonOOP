@@ -5,5 +5,5 @@ public class Assets {
     public static final String auscreen = "screen/auscreen.png";
     public static final String levelbg = "screen/levelbg.png";
 
-    public static final String tutorial =  "screen/tutorial.jpg";
+    public static final String tutorial =  "screen/tutorial.png";
 }
