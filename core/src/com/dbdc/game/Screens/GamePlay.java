@@ -76,8 +76,8 @@ public class GamePlay extends PhysicScreen {
     boolean timerEnd;
     int bookCollected;
     boolean isInExamArea;
-    private int seconds = 3,
-            minutes = 0;
+    private int seconds = 30,
+            minutes = 1;
     private int LEVELTIME;
     private float accumulatedTime;
     private List<Item> levelItems;
@@ -454,6 +454,7 @@ public class GamePlay extends PhysicScreen {
             item.update(delta);
             item.getModelInstance().transform.getTranslation(tmpV1);
             if(tmpV1.dst(tmpV2) <= Item.COLLECT_RADIUS) {
+                game.audioManager.playSoundEffect(5);
                 removeSceneFromSceneManager(item.getModelScene());
                 bulletPhysicsSystem.removeBody(item.getBody());
                 itr.remove();
@@ -562,8 +563,8 @@ public class GamePlay extends PhysicScreen {
     }
 
     private void resetTimer() {
-        seconds = 3;
-        minutes = 0;
+        seconds = 30;
+        minutes = 1;
         accumulatedTime = 0;
         timerEnd = false;
     }

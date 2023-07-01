@@ -67,7 +67,7 @@
         }
       },
       {
-        "charModelPath": "models/character/brokenminion.gltf",
+        "charModelPath": "models/character/warrior_broken.gltf",
         "position": {
           "x": 3.6,
           "y": 5.0,
@@ -75,7 +75,7 @@
         }
       },
       {
-        "charModelPath": "models/character/brokenminion.gltf",
+        "charModelPath": "models/character/warrior_broken.gltf",
         "position": {
           "x": -3,
           "y": 5.0,

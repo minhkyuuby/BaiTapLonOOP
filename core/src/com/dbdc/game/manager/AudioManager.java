@@ -26,6 +26,7 @@ public class AudioManager {
         soundEffects.add(Gdx.audio.newSound(Gdx.files.internal("music/mp3/sfx/WritingSfx.mp3")));
         soundEffects.add(Gdx.audio.newSound(Gdx.files.internal("music/mp3/sfx/Win.mp3")));
         soundEffects.add(Gdx.audio.newSound(Gdx.files.internal("music/mp3/sfx/Lose.mp3")));
+        soundEffects.add(Gdx.audio.newSound(Gdx.files.internal("music/mp3/sfx/CollectItem.mp3")));
         click = Gdx.audio.newSound(Gdx.files.internal("music/mp3/click.wav"));
     }
 

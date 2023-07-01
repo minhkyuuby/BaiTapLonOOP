@@ -35,11 +35,17 @@ public class EnemyController implements AnimationController.AnimationListener {
         character = entity;
 //        physicsSystem = bulletPhysicsSystem;
         animationController = character.getAnimationController();
-        animationController.setAnimation("Run", -1);
         isDefeated = false;
         isAttacking = false;
         shouldBeDestroy = false;
         Random rand = new Random();
+        int animId = rand.nextInt(2);
+        if (animId == 1) {
+            animationController.setAnimation("Idle", -1);
+        } else {
+            animationController.setAnimation("Dance", -1);
+
+        }
         atkCountdown = rand.nextFloat(ATTACK_DELAY);
         getCharacter().getBody().applyTorqueImpulse(new Vector3(0,rand.nextFloat(15),0));
         
