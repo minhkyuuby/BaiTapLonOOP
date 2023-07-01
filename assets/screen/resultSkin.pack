@@ -1,0 +1,167 @@
+
+resultSkin.png
+size: 2048, 1024
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+A
+  rotate: false
+  xy: 1369, 536
+  size: 155, 124
+  orig: 155, 124
+  offset: 0, 0
+  index: -1
+A+
+  rotate: false
+  xy: 917, 314
+  size: 155, 124
+  orig: 155, 124
+  offset: 0, 0
+  index: -1
+B
+  rotate: false
+  xy: 760, 314
+  size: 155, 124
+  orig: 155, 124
+  offset: 0, 0
+  index: -1
+B+
+  rotate: false
+  xy: 1212, 410
+  size: 155, 124
+  orig: 155, 124
+  offset: 0, 0
+  index: -1
+C
+  rotate: false
+  xy: 1799, 867
+  size: 155, 124
+  orig: 155, 124
+  offset: 0, 0
+  index: -1
+C+
+  rotate: false
+  xy: 1369, 410
+  size: 155, 124
+  orig: 155, 124
+  offset: 0, 0
+  index: -1
+D
+  rotate: false
+  xy: 1212, 536
+  size: 155, 124
+  orig: 155, 124
+  offset: 0, 0
+  index: -1
+D+
+  rotate: false
+  xy: 603, 314
+  size: 155, 124
+  orig: 155, 124
+  offset: 0, 0
+  index: -1
+backtolevel_down
+  rotate: false
+  xy: 1212, 909
+  size: 305, 82
+  orig: 305, 82
+  offset: 0, 0
+  index: -1
+backtolevel_up
+  rotate: false
+  xy: 2, 312
+  size: 305, 84
+  orig: 305, 84
+  offset: 0, 0
+  index: -1
+book0
+  rotate: false
+  xy: 2, 188
+  size: 278, 60
+  orig: 278, 60
+  offset: 0, 0
+  index: -1
+book01
+  rotate: false
+  xy: 309, 336
+  size: 278, 60
+  orig: 278, 60
+  offset: 0, 0
+  index: -1
+book02
+  rotate: false
+  xy: 1212, 662
+  size: 278, 59
+  orig: 278, 59
+  offset: 0, 0
+  index: -1
+book03
+  rotate: false
+  xy: 1519, 931
+  size: 278, 60
+  orig: 278, 60
+  offset: 0, 0
+  index: -1
+book04
+  rotate: false
+  xy: 2, 2
+  size: 277, 60
+  orig: 277, 60
+  offset: 0, 0
+  index: -1
+book05
+  rotate: false
+  xy: 2, 126
+  size: 278, 60
+  orig: 278, 60
+  offset: 0, 0
+  index: -1
+book06
+  rotate: false
+  xy: 1212, 847
+  size: 278, 60
+  orig: 278, 60
+  offset: 0, 0
+  index: -1
+book07
+  rotate: false
+  xy: 2, 64
+  size: 278, 60
+  orig: 278, 60
+  offset: 0, 0
+  index: -1
+book08
+  rotate: false
+  xy: 1212, 785
+  size: 278, 60
+  orig: 278, 60
+  offset: 0, 0
+  index: -1
+book09
+  rotate: false
+  xy: 2, 250
+  size: 278, 60
+  orig: 278, 60
+  offset: 0, 0
+  index: -1
+book10
+  rotate: false
+  xy: 1212, 723
+  size: 278, 60
+  orig: 278, 60
+  offset: 0, 0
+  index: -1
+failbg
+  rotate: false
+  xy: 2, 398
+  size: 599, 593
+  orig: 599, 593
+  offset: 0, 0
+  index: -1
+passbg
+  rotate: false
+  xy: 603, 440
+  size: 607, 551
+  orig: 607, 551
+  offset: 0, 0
+  index: -1

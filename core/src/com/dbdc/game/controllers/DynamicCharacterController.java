@@ -144,7 +144,7 @@ public class DynamicCharacterController implements AnimationController.Animation
 
     public void TakeExam() {
         examTaked = true;
-        animationController.action("Interact", 1, 1, this, 0f);
+        animationController.action("Interact", 1, 0.6f, this, 0f);
     }
 
     public void resetExamStat() {
@@ -154,6 +154,7 @@ public class DynamicCharacterController implements AnimationController.Animation
 
     @Override
     public void onEnd(AnimationController.AnimationDesc animation) {
+        isAttacking= false;
         if(animation.animation.id.equals("AttackSpinning")) {
             isAttacking = false;
         }

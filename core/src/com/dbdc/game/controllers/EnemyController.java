@@ -40,8 +40,9 @@ public class EnemyController implements AnimationController.AnimationListener {
         isAttacking = false;
         shouldBeDestroy = false;
         Random rand = new Random();
-
         atkCountdown = rand.nextFloat(ATTACK_DELAY);
+        getCharacter().getBody().applyTorqueImpulse(new Vector3(0,rand.nextFloat(15),0));
+        
     }
 
     public void update(float delta) {
