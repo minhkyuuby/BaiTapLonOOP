@@ -232,11 +232,11 @@ public class GamePlay extends PhysicScreen {
 
     @Override
     public void render(float delta) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            game.setScreen(game.getScreen(GameScreen.Levels));
-            ClearScreen();
-            return;
-        }
+//        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+//            game.setScreen(game.getScreen(GameScreen.Levels));
+//            ClearScreen();
+//            return;
+//        }
         super.render(delta);
 
         playerController.update(delta);
